@@ -1,26 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel ="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css" />
     <title>Simulador Medico</title>
-</head>
-<body class="bg-gray-200">
-    <!-- contenedor principal -->
-    <div class="bg-gray-200 min-h-screen">
-        <!-- titulo -->
-        <div class="m-4">
-            <h1 class="text-4xl text-center font-bold">Simulador Medico</h1>
-        </div>
-        <!-- contenedor de botones -->
-         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto p-8">
-            <button id="btnMedicion" class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition">Medición</button>
-            <button id="btnRegistro" class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition">Registro</button>
-            <button id="btnAyuda" class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition">Ayuda</button>
-         </div>
+  </head>
+  <body class="bg-gray-200">
+    <!-- Vista principal -->
+    <div id="vistaMenu" class="min-h-screen">
+      <div class="m-4">
+        <h1 class="text-4xl text-center font-bold">Simulador Médico</h1>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto p-8">
+        <button
+          id="btnMedicion"
+          class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition"
+        >
+          Medición
+        </button>
+        <button
+          id="btnRegistro"
+          class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition"
+        >
+          Registro
+        </button>
+        <button
+          id="btnAyuda"
+          class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition"
+        >
+          Ayuda
+        </button>
+      </div>
     </div>
-</body>
-<script src="main.js"></script>
+
+    <!-- Vista Medición -->
+    <div id="vistaMedicion" class="hidden p-6 space-y-8">
+      <h2 class="text-2xl font-semibold mb-4 text-center">
+        Seleccione tipo de medición
+      </h2>
+      <button
+        id="btnVolverMenuDesdeMedicion"
+        class="mt-6 text-blue-500 hover:underline"
+      >
+        ← Volver al menú
+      </button>
+      <div class="grid grid-cols-1 gap-8">
+        <button class="bg-green-300 p-4 rounded hover:bg-green-100" id="btnPresionArterial">
+          Presión Arterial
+        </button>
+        <button class="bg-yellow-300 p-4 rounded hover:bg-yellow-100" id="btnRitmoCardiaco">
+          Ritmo Cardíaco
+        </button>
+      </div>
+    </div>
+
+    <!-- Vista Registro -->
+    <div id="vistaRegistro" class="hidden p-6">
+      <h2 class="text-2xl font-semibold mb-4">Historial de Mediciones</h2>
+      <button
+        id="btnVolverMenuDesdeRegistro"
+        class="mt-6 text-blue-500 hover:underline"
+      >
+        ← Volver al menú
+      </button>
+      <!-- Aquí irán los filtros o el historial -->
+    </div>
+
+    <!-- Vista Ayuda -->
+    <div id="vistaAyuda" class="hidden p-6">
+      <h2 class="text-2xl font-semibold mb-4">Centro de Ayuda</h2>
+      <p>
+        Aquí podrás encontrar información sobre presión arterial, ritmo
+        cardíaco, cuándo acudir al médico, etc.
+      </p>
+      <button
+        id="btnVolverMenuDesdeAyuda"
+        class="mt-6 text-blue-500 hover:underline"
+      >
+        ← Volver al menú
+      </button>
+    </div>
+
+    <!-- Vista Presión Arterial -->
+    <div id="vistaPresionArterial" class="hidden p-6 space-y-6">
+      <h2 class="text-2xl font-semibold mb-4 text-center">Registro de Presión Arterial</h2>
+      <button id="btnVolverDesdePresion" class="text-blue-500 hover:underline mb-4">← Volver</button>
+      <form id="formPresion" class="space-y-4 max-w-md mx-auto">
+        <div>
+          <label for="inputSistolica" class="block mb-1 font-medium">Presión Sistólica</label>
+          <input
+            type="number"
+            id="inputSistolica"
+            class="w-full p-2 border border-gray-300 rounded"
+            placeholder="Ej. 120"
+          />
+        </div>
+        <div>
+          <label for="inputDiastolica" class="block mb-1 font-medium">Presión Diastólica</label>
+          <input
+            type="number"
+            id="inputDiastolica"
+            class="w-full p-2 border border-gray-300 rounded"
+            placeholder="Ej. 80"
+          />
+        </div>
+        <div>
+          <label for="inputFecha" class="block mb-1 font-medium">Fecha del Registro</label>
+          <input
+            type="date"
+            id="inputFecha"
+            class="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-400 transition"
+        >
+          Registrar
+        </button>
+      </form>
+    </div>
+  </body>
+  <script src="main.js"></script>
 </html>

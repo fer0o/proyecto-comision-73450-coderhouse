@@ -1,29 +1,55 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Página cargada");
-  
-    const btnMedicion = document.getElementById("btnMedicion");
-    const btnRegistro = document.getElementById("btnRegistro");
-    const btnAyuda = document.getElementById("btnAyuda");
-  
-    if (btnMedicion) {
-      btnMedicion.addEventListener("click", () => {
-        alert("Ir a Medición");
-        console.log("Botón Medición clicado");
-        // Aquí podrías ocultar la vista principal y mostrar otra
-      });
+  const vistas = {
+    menu: document.getElementById("vistaMenu"),
+    medicion: document.getElementById("vistaMedicion"),
+    registro: document.getElementById("vistaRegistro"),
+    ayuda: document.getElementById("vistaAyuda"),
+    presion: document.getElementById("vistaPresionArterial"),
+  };
+
+  const mostrarVista = (vistaSeleccionada) => {
+    for (let vista in vistas) {
+      vistas[vista].classList.add("hidden");
     }
-  
-    if (btnRegistro) {
-      btnRegistro.addEventListener("click", () => {
-        alert("Ir a Registro");
-        console.log("Botón Registro clicado");
-      });
-    }
-  
-    if (btnAyuda) {
-      btnAyuda.addEventListener("click", () => {
-        alert("Ir a Ayuda");
-        console.log("Botón Ayuda clicado");
-      });
-    }
-  });
+    vistas[vistaSeleccionada].classList.remove("hidden");
+  };
+
+  document
+    .getElementById("btnMedicion")
+    .addEventListener("click", () => mostrarVista("medicion"));
+  document
+    .getElementById("btnRegistro")
+    .addEventListener("click", () => mostrarVista("registro"));
+  document
+    .getElementById("btnAyuda")
+    .addEventListener("click", () => mostrarVista("ayuda"));
+
+  document
+    .getElementById("btnVolverMenuDesdeMedicion")
+    .addEventListener("click", () => mostrarVista("menu"));
+  document
+    .getElementById("btnVolverMenuDesdeRegistro")
+    .addEventListener("click", () => mostrarVista("menu"));
+  document
+    .getElementById("btnVolverMenuDesdeAyuda")
+    .addEventListener("click", () => mostrarVista("menu"));
+
+  const btnPresionArterial = document.getElementById("btnPresionArterial");
+  const btnRitmoCardiaco = document.getElementById("btnRitmoCardiaco");
+
+  if (btnPresionArterial) {
+    btnPresionArterial.addEventListener("click", () => {
+      mostrarVista("presion");
+    });
+  }
+
+  if (btnRitmoCardiaco) {
+    btnRitmoCardiaco.addEventListener("click", () => {
+      console.log("Ritmo Cardíaco seleccionado");
+    });
+  }
+
+  document
+    .getElementById("btnVolverDesdePresion")
+    .addEventListener("click", () => mostrarVista("medicion"));
+});
