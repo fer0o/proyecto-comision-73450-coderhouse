@@ -5,10 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel ="stylesheet" href="styles.css">
-    <title>Document</title>
+    <title>Simulador Medico</title>
 </head>
-<body>
-    <h1 class="text-3xl text-blue-300 font-bold">My First Web Page</h1>
+<body class="bg-gray-200">
+    <!-- contenedor principal -->
+    <div class="bg-gray-200 min-h-screen">
+        <!-- titulo -->
+        <div class="m-4">
+            <h1 class="text-4xl text-center font-bold">Simulador Medico</h1>
+        </div>
+        <!-- contenedor de botones -->
+         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 my-auto p-8">
+            <button id="btnMedicion" class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition">Medición</button>
+            <button id="btnRegistro" class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition">Registro</button>
+            <button id="btnAyuda" class="bg-blue-300 p-6 shadow rounded hover:bg-blue-100 transition">Ayuda</button>
+         </div>
+    </div>
 </body>
 <script src="main.js"></script>
 </html>
