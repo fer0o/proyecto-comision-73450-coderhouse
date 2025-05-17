@@ -31,11 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
   // Navegación de botones en medición
   const btnPresionArterial = document.getElementById("btnPresionArterial");
   const btnRitmoCardiaco = document.getElementById("btnRitmoCardiaco");
-
+// Cargamos la información de presión al mostrar la vista
   if (btnPresionArterial) {
     btnPresionArterial.addEventListener("click", () => {
       mostrarVista("presion");
-      cargarInformacionPresion(); // ✅ Cargar información de presión al mostrar la vista
+      cargarInformacionPresion(); 
     });
   }
 
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const inputDiastolica = document.getElementById("inputDiastolica").value;
     const inputFecha = document.getElementById("inputFecha").value;
 
-    if (!inputDiastolica.trim() || !inputSistolica.trim() || !inputFecha.trim()) {
+    if (!inputDiastolica || !inputSistolica || !inputFecha) {
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -71,8 +71,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const systolic = parseInt(inputSistolica);
     const diastolic = parseInt(inputDiastolica);
+    const fechaRegistro = new Date(inputFecha);
+    const fechaActual = new Date();
+    //validaciones 
+    if ( systolic <= 0 || diastolic <= 0){
+      console.log("Los valores de presión deben ser mayores a 0");
+      return Swal.fire("Error", "Los valores de presión deben ser mayores a 0.", "error")
+    }
+    if(systolic < 40 || systolic > 250){
+      console.log("Los valores de presión sistólica son inválidos");
+      return Swal.fire("Error", "La presión sistólica debe estar entre 40 y 250.", "error");
+    }
+    if(diastolic < 30 || diastolic > 150){
+      console.log("Los valores de presión diastólica son inválidos");
+      return Swal.fire("Error", "La presión diastólica debe estar entre 30 y 150.", "error");
+    }
+    if (fechaRegistro > fechaActual) {
+      console.log("La fecha no puede ser futura");
+      return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
+    }
+    // Validamos
     const status = getStatus({ systolic, diastolic });
-
     // Mostramos el resultado
     mostrarResultado(status);
   }
@@ -81,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function getStatus({ systolic, diastolic }) {
     if (systolic < 60 || diastolic < 60) {
       return "Low";
-    } else if ((systolic > 90 && systolic <= 120) || (diastolic >= 60 && diastolic <= 80)) {
+    } else if ((systolic >= 90 && systolic <= 120) || (diastolic >= 60 && diastolic <= 80)) {
       return "Normal";
     } else if ((systolic >= 121 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89)) {
       return "Risk";
