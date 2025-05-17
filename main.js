@@ -121,7 +121,7 @@ const cargarInformacionPresion = () => {
   // Verificamos si existe el contenedor
   if (container) {
     container.innerHTML = `
-      <div class="text-start space-y-4">
+      <div >
         <p><b>${presionInfo.sistolica.titulo}:</b> ${presionInfo.sistolica.descripcion}</p>
         <p><b>${presionInfo.diastolica.titulo}:</b> ${presionInfo.diastolica.descripcion}</p>
       </div>
