@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnVolverMenuDesdeMedicion").addEventListener("click", () => mostrarVista("menu"));
   document.getElementById("btnVolverMenuDesdeRegistro").addEventListener("click", () => mostrarVista("menu"));
   document.getElementById("btnVolverMenuDesdeAyuda").addEventListener("click", () => mostrarVista("menu"));
+  document.getElementById("btnVolverDesdeFrecuencia").addEventListener("click", () => mostrarVista("medicion"));
   document.getElementById("btnVolverDesdePresion").addEventListener("click", () => mostrarVista("medicion"));
 
   // Navegación de botones en medición
