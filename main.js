@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     registro: document.getElementById("vistaRegistro"),
     ayuda: document.getElementById("vistaAyuda"),
     presion: document.getElementById("vistaPresionArterial"),
+    frecuencia: document.getElementById("vistaFrecuenciaCardiaca"),
   };
 
   const mostrarVista = (vistaSeleccionada) => {
@@ -41,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (btnRitmoCardiaco) {
     btnRitmoCardiaco.addEventListener("click", () => {
+      mostrarVista("frecuencia");
       console.log("Ritmo Cardíaco seleccionado");
     });
   }
