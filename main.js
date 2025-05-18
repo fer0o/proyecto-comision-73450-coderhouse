@@ -21,23 +21,39 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Navegación entre vistas
-  document.getElementById("btnMedicion").addEventListener("click", () => mostrarVista("medicion"));
-  document.getElementById("btnRegistro").addEventListener("click", () => mostrarVista("registro"));
-  document.getElementById("btnAyuda").addEventListener("click", () => mostrarVista("ayuda"));
-  document.getElementById("btnVolverMenuDesdeMedicion").addEventListener("click", () => mostrarVista("menu"));
-  document.getElementById("btnVolverMenuDesdeRegistro").addEventListener("click", () => mostrarVista("menu"));
-  document.getElementById("btnVolverMenuDesdeAyuda").addEventListener("click", () => mostrarVista("menu"));
-  document.getElementById("btnVolverDesdeFrecuencia").addEventListener("click", () => mostrarVista("medicion"));
-  document.getElementById("btnVolverDesdePresion").addEventListener("click", () => mostrarVista("medicion"));
+  document
+    .getElementById("btnMedicion")
+    .addEventListener("click", () => mostrarVista("medicion"));
+  document
+    .getElementById("btnRegistro")
+    .addEventListener("click", () => mostrarVista("registro"));
+  document
+    .getElementById("btnAyuda")
+    .addEventListener("click", () => mostrarVista("ayuda"));
+  document
+    .getElementById("btnVolverMenuDesdeMedicion")
+    .addEventListener("click", () => mostrarVista("menu"));
+  document
+    .getElementById("btnVolverMenuDesdeRegistro")
+    .addEventListener("click", () => mostrarVista("menu"));
+  document
+    .getElementById("btnVolverMenuDesdeAyuda")
+    .addEventListener("click", () => mostrarVista("menu"));
+  document
+    .getElementById("btnVolverDesdeFrecuencia")
+    .addEventListener("click", () => mostrarVista("medicion"));
+  document
+    .getElementById("btnVolverDesdePresion")
+    .addEventListener("click", () => mostrarVista("medicion"));
 
   // Navegación de botones en medición
   const btnPresionArterial = document.getElementById("btnPresionArterial");
   const btnRitmoCardiaco = document.getElementById("btnRitmoCardiaco");
-// Cargamos la información de presión al mostrar la vista
+  // Cargamos la información de presión al mostrar la vista
   if (btnPresionArterial) {
     btnPresionArterial.addEventListener("click", () => {
       mostrarVista("presion");
-      cargarInformacionPresion(); 
+      cargarInformacionPresion();
     });
   }
 
@@ -76,22 +92,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const diastolic = parseInt(inputDiastolica);
     const fechaRegistro = new Date(inputFecha);
     const fechaActual = new Date();
-    //validaciones 
-    if ( systolic <= 0 || diastolic <= 0){
+    //validaciones
+    if (systolic <= 0 || diastolic <= 0) {
       console.log("Los valores de presión deben ser mayores a 0");
-      return Swal.fire("Error", "Los valores de presión deben ser mayores a 0.", "error")
+      return Swal.fire(
+        "Error",
+        "Los valores de presión deben ser mayores a 0.",
+        "error"
+      );
     }
-    if(systolic < 40 || systolic > 250){
+    if (systolic <= 0 || systolic > 250) {
       console.log("Los valores de presión sistólica son inválidos");
-      return Swal.fire("Error", "La presión sistólica debe estar entre 40 y 250.", "error");
+      return Swal.fire(
+        "Error",
+        "La presión sistólica debe estar entre 40 y 250.",
+        "error"
+      );
     }
-    if(diastolic < 30 || diastolic > 150){
+    if (diastolic <= 0 || diastolic > 250) {
       console.log("Los valores de presión diastólica son inválidos");
-      return Swal.fire("Error", "La presión diastólica debe estar entre 30 y 150.", "error");
+      return Swal.fire(
+        "Error",
+        "La presión diastólica debe estar entre 30 y 150.",
+        "error"
+      );
     }
     if (fechaRegistro > fechaActual) {
       console.log("La fecha no puede ser futura");
-      return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
+      return Swal.fire(
+        "Error",
+        "La fecha no puede estar en el futuro.",
+        "error"
+      );
     }
     // Validamos
     const status = getStatus({ systolic, diastolic });
@@ -103,9 +135,15 @@ document.addEventListener("DOMContentLoaded", () => {
   function getStatus({ systolic, diastolic }) {
     if (systolic < 60 || diastolic < 60) {
       return "Low";
-    } else if ((systolic >= 90 && systolic <= 120) || (diastolic >= 60 && diastolic <= 80)) {
+    } else if (
+      (systolic >= 90 && systolic <= 120) ||
+      (diastolic >= 60 && diastolic <= 80)
+    ) {
       return "Normal";
-    } else if ((systolic >= 121 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89)) {
+    } else if (
+      (systolic >= 121 && systolic <= 139) ||
+      (diastolic >= 80 && diastolic <= 89)
+    ) {
       return "Risk";
     } else if (systolic >= 140 || diastolic >= 90) {
       return "High";
@@ -118,16 +156,28 @@ document.addEventListener("DOMContentLoaded", () => {
   function mostrarResultado(status) {
     switch (status) {
       case "Low":
-        Swal.fire("Nivel de Presión Baja", "Recomendable ver a un médico.", "warning");
+        Swal.fire(
+          "Nivel de Presión Baja",
+          "Recomendable ver a un médico.",
+          "warning"
+        );
         break;
       case "Normal":
         Swal.fire("Nivel de Presión Normal", "Sigue cuidándote.", "success");
         break;
       case "Risk":
-        Swal.fire("Presión en Riesgo", "Sugerencia visitar a un médico.", "warning");
+        Swal.fire(
+          "Presión en Riesgo",
+          "Sugerencia visitar a un médico.",
+          "warning"
+        );
         break;
       case "High":
-        Swal.fire("Niveles altos", "Visitar a tu médico lo antes posible.", "error");
+        Swal.fire(
+          "Niveles altos",
+          "Visitar a tu médico lo antes posible.",
+          "error"
+        );
         break;
       default:
         Swal.fire("Error", "Datos inválidos, revisa tu medición.", "error");
@@ -139,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ✅ Función flecha para mostrar la información de la presión arterial
 const cargarInformacionPresion = () => {
   const container = document.getElementById("presionInfoContainer");
-  
+
   // Verificamos si existe el contenedor
   if (container) {
     container.innerHTML = `
@@ -148,5 +198,78 @@ const cargarInformacionPresion = () => {
         <p><b>${presionInfo.diastolica.titulo}:</b> ${presionInfo.diastolica.descripcion}</p>
       </div>
     `;
+  }
+};
+
+//detectamos el evento de registro de frecuencia cardiaca
+const btnRegistrarFrecuencia = document.getElementById(
+  "btnRegistrarFrecuencia"
+);
+if (btnRegistrarFrecuencia) {
+  btnRegistrarFrecuencia.addEventListener("click", () => {
+    registrarFrecuenciaCardiaca();
+  });
+}
+// Función para registrar la frecuencia cardiaca
+const registrarFrecuenciaCardiaca = () => {
+  console.log("click en el botón de registrar frecuencia cardiaca");
+  const frecuencia = prompt(
+    "Ingrese su frecuencia cardiaca (latidos por minuto):"
+  );
+  //validaciones
+  if(!frecuencia){
+    console.log("No se ha ingresado frecuencia cardiaca");
+    return Swal.fire(
+      "Error",
+      "No se ha ingresado frecuencia cardiaca.",
+      "error"
+    );
+  }
+  const ritmo = parseInt(frecuencia);
+  if (isNaN(ritmo) || ritmo <= 0) {
+    console.log("La frecuencia cardiaca debe ser un número positivo");
+    return Swal.fire(
+      "Error",
+      "La frecuencia cardiaca debe ser un número positivo.",
+      "error"
+    );
+  }
+  if( ritmo < 40 || ritmo > 200){
+    console.log("Error, el valor debe estar entre 40 y 200");
+    return Swal.fire(
+      "Error",
+      "La frecuencia cardiaca debe estar entre 40 y 200 latidos por minuto.",
+      "error"
+    );
+  }
+  //Analisis del estado
+  let estado = "";
+  if (ritmo < 60){
+    return Swal.fire(
+      "Frecuencia Cardíaca Baja",
+      "Recomendable ver a un médico.",
+      "warning"
+    );
+  }
+  else if ( ritmo >= 60 && ritmo <= 100){
+    return Swal.fire(
+      "Frecuencia Cardíaca Normal",
+      "Sigue cuidándote.",
+      "success"
+    );
+  }
+  else if (ritmo > 100 && ritmo <= 120){
+    return Swal.fire(
+      "Frecuencia Cardíaca Alta",
+      "Sugerencia visitar a un médico.",
+      "warning"
+    );
+  }
+  else if (ritmo > 120){
+    return Swal.fire(
+      "Frecuencia Cardíaca Muy Alta",
+      "Visitar a tu médico lo antes posible.",
+      "error"
+    );
   }
 };
