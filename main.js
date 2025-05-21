@@ -298,7 +298,7 @@ const renderRangosFrecuencia = () => {
 
     const valor = document.createElement("p");
     valor.textContent = `valor: ${rango.valor}`;
-
+ 
     const descripcion = document.createElement("p");
     textContainer.appendChild(nombre);
     textContainer.appendChild(valor);
