@@ -1,7 +1,7 @@
 // main.js
 
 // imports
-import { presionInfo } from "./utils/presionInfo/presionMockData.js";
+import { presionInfo, rangosPresion } from "./utils/presionInfo/presionMockData.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const vistas = {
@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnPresionArterial.addEventListener("click", () => {
       mostrarVista("presion");
       cargarInformacionPresion();
+      renderRangosPresion();
     });
   }
 
@@ -63,6 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Ritmo Cardíaco seleccionado");
     });
   }
+
+  
 
   // Capturamos los datos del formulario de presión arterial
   const formPresionArterial = document.getElementById("formPresionArterial");
@@ -199,6 +202,42 @@ const cargarInformacionPresion = () => {
       </div>
     `;
   }
+};
+//mostrar los datos de los rangos de presión arterial del presionMockData.js
+const renderRangosPresion = () => {
+  const container = document.getElementById("rangoPresionContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  rangosPresion.forEach((rango) => {
+    const div = document.createElement("div");
+    div.className = "flex flex-row items-start gap-4";
+
+    const colorBox = document.createElement("div");
+    colorBox.className = `w-12 h-12 ${rango.color}`;
+
+    const textContainer = document.createElement("div");
+    textContainer.className = "text-sm text-gray-700";
+
+    const nombre = document.createElement("p");
+    nombre.className = "font-bold";
+    nombre.textContent = rango.nombre;
+
+    const sistolica = document.createElement("p");
+    sistolica.textContent = `sistolica ${rango.sistolica}`;
+
+    const diastolica = document.createElement("p");
+    diastolica.textContent = `diastolica ${rango.diastolica}`;
+
+    textContainer.appendChild(nombre);
+    textContainer.appendChild(sistolica);
+    textContainer.appendChild(diastolica);
+
+    div.appendChild(colorBox);
+    div.appendChild(textContainer);
+    container.appendChild(div);
+  });
 };
 
 //detectamos el evento de registro de frecuencia cardiaca
