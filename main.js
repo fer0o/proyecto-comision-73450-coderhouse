@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnRitmoCardiaco.addEventListener("click", () => {
       mostrarVista("frecuencia");
       console.log("Ritmo Cardíaco seleccionado");
+      renderRangosFrecuencia()
     });
   }
 
@@ -239,6 +240,7 @@ const renderRangosPresion = () => {
     container.appendChild(div);
   });
 };
+//////////Frecuencia cardiaca/////////////
 
 //detectamos el evento de registro de frecuencia cardiaca
 const btnRegistrarFrecuencia = document.getElementById(
@@ -249,6 +251,64 @@ if (btnRegistrarFrecuencia) {
     registrarFrecuenciaCardiaca();
   });
 }
+
+// Datos locales de rangos de frecuencia cardiaca
+const rangosFrecuencia = [
+  {
+    nombre: "Frecuencia Baja",
+    valor: "< 60",
+    color: "bg-blue-500",
+  },
+  {
+    nombre: "Frecuencia Normal",
+    valor: "60 - 100",
+    color: "bg-green-500",
+  },
+  {
+    nombre: "Frecuencia Alta",
+    valor: "101 - 120",
+    color: "bg-orange-400",
+  },
+  {
+    nombre: "Frecuencia Muy Alta",
+    valor: "> 120",
+    color: "bg-red-600",
+  }
+];
+
+const renderRangosFrecuencia = () => {
+  const container = document.getElementById("rangoFrecuenciaContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  rangosFrecuencia.forEach((rango) => {
+    const div = document.createElement("div");
+    div.className = "flex flex-row items-start gap-4";
+
+    const colorBox = document.createElement("div");
+    colorBox.className = `w-12 h-12 ${rango.color}`;
+
+    const textContainer = document.createElement("div");
+    textContainer.className = "text-sm text-gray-700";
+
+    const nombre = document.createElement("p");
+    nombre.className = "font-bold";
+    nombre.textContent = rango.nombre;
+
+    const valor = document.createElement("p");
+    valor.textContent = `valor: ${rango.valor}`;
+
+    const descripcion = document.createElement("p");
+    textContainer.appendChild(nombre);
+    textContainer.appendChild(valor);
+  
+
+    div.appendChild(colorBox);
+    div.appendChild(textContainer);
+    container.appendChild(div);
+  });
+};
 // Función para registrar la frecuencia cardiaca
 const registrarFrecuenciaCardiaca = () => {
   console.log("click en el botón de registrar frecuencia cardiaca");
