@@ -1,7 +1,10 @@
 // main.js
 
 // imports
-import { presionInfo, rangosPresion } from "./utils/presionInfo/presionMockData.js";
+import {
+  presionInfo,
+  rangosPresion,
+} from "./utils/presionInfo/presionMockData.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const vistas = {
@@ -62,11 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
     btnRitmoCardiaco.addEventListener("click", () => {
       mostrarVista("frecuencia");
       console.log("Ritmo Cardíaco seleccionado");
-      renderRangosFrecuencia()
+      renderRangosFrecuencia();
     });
   }
-
-  
 
   // Capturamos los datos del formulario de presión arterial
   const formPresionArterial = document.getElementById("formPresionArterial");
@@ -96,9 +97,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const diastolic = parseInt(inputDiastolica);
     const fechaRegistro = new Date(inputFecha);
     const fechaActual = new Date();
-    //validaciones
+
     if (systolic <= 0 || diastolic <= 0) {
-      console.log("Los valores de presión deben ser mayores a 0");
       return Swal.fire(
         "Error",
         "Los valores de presión deben ser mayores a 0.",
@@ -106,7 +106,6 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
     if (systolic <= 0 || systolic > 250) {
-      console.log("Los valores de presión sistólica son inválidos");
       return Swal.fire(
         "Error",
         "La presión sistólica debe estar entre 40 y 250.",
@@ -114,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
     if (diastolic <= 0 || diastolic > 250) {
-      console.log("Los valores de presión diastólica son inválidos");
       return Swal.fire(
         "Error",
         "La presión diastólica debe estar entre 30 y 150.",
@@ -122,17 +120,29 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
     if (fechaRegistro > fechaActual) {
-      console.log("La fecha no puede ser futura");
       return Swal.fire(
         "Error",
         "La fecha no puede estar en el futuro.",
         "error"
       );
     }
-    // Validamos
+
     const status = getStatus({ systolic, diastolic });
-    // Mostramos el resultado
+
+    // Mostrar el resultado
     mostrarResultado(status);
+
+    // Guardar en localStorage
+    const nuevoRegistro = {
+      systolic,
+      diastolic,
+      fecha: inputFecha,
+    };
+
+    const registrosPresion =
+      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+    registrosPresion.push(nuevoRegistro);
+    localStorage.setItem("registrosPresion", JSON.stringify(registrosPresion));
   }
 
   // ✅ Función para obtener el estado de la presión arterial
@@ -242,16 +252,6 @@ const renderRangosPresion = () => {
 };
 //////////Frecuencia cardiaca/////////////
 
-//detectamos el evento de registro de frecuencia cardiaca
-const btnRegistrarFrecuencia = document.getElementById(
-  "btnRegistrarFrecuencia"
-);
-if (btnRegistrarFrecuencia) {
-  btnRegistrarFrecuencia.addEventListener("click", () => {
-    registrarFrecuenciaCardiaca();
-  });
-}
-
 // Datos locales de rangos de frecuencia cardiaca
 const rangosFrecuencia = [
   {
@@ -273,7 +273,7 @@ const rangosFrecuencia = [
     nombre: "Frecuencia Muy Alta",
     valor: "> 120",
     color: "bg-red-600",
-  }
+  },
 ];
 
 const renderRangosFrecuencia = () => {
@@ -298,54 +298,98 @@ const renderRangosFrecuencia = () => {
 
     const valor = document.createElement("p");
     valor.textContent = `valor: ${rango.valor}`;
- 
+
     const descripcion = document.createElement("p");
     textContainer.appendChild(nombre);
     textContainer.appendChild(valor);
-  
 
     div.appendChild(colorBox);
     div.appendChild(textContainer);
     container.appendChild(div);
   });
 };
-const formFrecuenciaCardiaca = document.getElementById("formFrecuenciaCardiaca");
+// Función para registrar frecuencia cardiaca
+const formFrecuenciaCardiaca = document.getElementById(
+  "formFrecuenciaCardiaca"
+);
 
 if (formFrecuenciaCardiaca) {
   formFrecuenciaCardiaca.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const frecuencia = parseInt(document.getElementById("inputFrecuencia").value);
+    const frecuencia = parseInt(
+      document.getElementById("inputFrecuencia").value
+    );
     const fecha = document.getElementById("inputFechaFrecuencia").value;
     const fechaActual = new Date();
 
     // Validaciones
     if (!frecuencia || !fecha) {
-      return Swal.fire("Error", "Por favor, completa todos los campos.", "error");
+      return Swal.fire(
+        "Error",
+        "Por favor, completa todos los campos.",
+        "error"
+      );
     }
     if (isNaN(frecuencia) || frecuencia <= 0) {
-      return Swal.fire("Error", "La frecuencia debe ser un número válido.", "error");
+      return Swal.fire(
+        "Error",
+        "La frecuencia debe ser un número válido.",
+        "error"
+      );
     }
     if (frecuencia < 40 || frecuencia > 200) {
-      return Swal.fire("Error", "Debe estar entre 40 y 200 latidos por minuto.", "error");
+      return Swal.fire(
+        "Error",
+        "Debe estar entre 40 y 200 latidos por minuto.",
+        "error"
+      );
     }
     const fechaRegistro = new Date(fecha);
     if (fechaRegistro > fechaActual) {
-      return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
+      return Swal.fire(
+        "Error",
+        "La fecha no puede estar en el futuro.",
+        "error"
+      );
     }
 
     // Análisis del estado
     if (frecuencia < 60) {
-      Swal.fire("Frecuencia Cardíaca Baja", "Recomendable ver a un médico.", "warning");
+      Swal.fire(
+        "Frecuencia Cardíaca Baja",
+        "Recomendable ver a un médico.",
+        "warning"
+      );
     } else if (frecuencia <= 100) {
       Swal.fire("Frecuencia Cardíaca Normal", "Sigue cuidándote.", "success");
     } else if (frecuencia <= 120) {
-      Swal.fire("Frecuencia Cardíaca Alta", "Sugerencia visitar a un médico.", "warning");
+      Swal.fire(
+        "Frecuencia Cardíaca Alta",
+        "Sugerencia visitar a un médico.",
+        "warning"
+      );
     } else {
-      Swal.fire("Frecuencia Cardíaca Muy Alta", "Visitar a tu médico lo antes posible.", "error");
+      Swal.fire(
+        "Frecuencia Cardíaca Muy Alta",
+        "Visitar a tu médico lo antes posible.",
+        "error"
+      );
     }
 
-    // (Más adelante aquí agregamos el guardado en localStorage)
+    // Guardar en localStorage
+const nuevoRegistro = {
+  frecuencia,
+  fecha,
+};
 
+const registrosFrecuencia =
+  JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+
+registrosFrecuencia.push(nuevoRegistro);
+localStorage.setItem(
+  "registrosFrecuencia",
+  JSON.stringify(registrosFrecuencia)
+);
   });
 }
