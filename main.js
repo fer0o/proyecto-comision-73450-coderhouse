@@ -309,66 +309,43 @@ const renderRangosFrecuencia = () => {
     container.appendChild(div);
   });
 };
-// Función para registrar la frecuencia cardiaca
-const registrarFrecuenciaCardiaca = () => {
-  console.log("click en el botón de registrar frecuencia cardiaca");
-  const frecuencia = prompt(
-    "Ingrese su frecuencia cardiaca (latidos por minuto):"
-  );
-  //validaciones
-  if(!frecuencia){
-    console.log("No se ha ingresado frecuencia cardiaca");
-    return Swal.fire(
-      "Error",
-      "No se ha ingresado frecuencia cardiaca.",
-      "error"
-    );
-  }
-  const ritmo = parseInt(frecuencia);
-  if (isNaN(ritmo) || ritmo <= 0) {
-    console.log("La frecuencia cardiaca debe ser un número positivo");
-    return Swal.fire(
-      "Error",
-      "La frecuencia cardiaca debe ser un número positivo.",
-      "error"
-    );
-  }
-  if( ritmo < 40 || ritmo > 200){
-    console.log("Error, el valor debe estar entre 40 y 200");
-    return Swal.fire(
-      "Error",
-      "La frecuencia cardiaca debe estar entre 40 y 200 latidos por minuto.",
-      "error"
-    );
-  }
-  //Analisis del estado
-  let estado = "";
-  if (ritmo < 60){
-    return Swal.fire(
-      "Frecuencia Cardíaca Baja",
-      "Recomendable ver a un médico.",
-      "warning"
-    );
-  }
-  else if ( ritmo >= 60 && ritmo <= 100){
-    return Swal.fire(
-      "Frecuencia Cardíaca Normal",
-      "Sigue cuidándote.",
-      "success"
-    );
-  }
-  else if (ritmo > 100 && ritmo <= 120){
-    return Swal.fire(
-      "Frecuencia Cardíaca Alta",
-      "Sugerencia visitar a un médico.",
-      "warning"
-    );
-  }
-  else if (ritmo > 120){
-    return Swal.fire(
-      "Frecuencia Cardíaca Muy Alta",
-      "Visitar a tu médico lo antes posible.",
-      "error"
-    );
-  }
-};
+const formFrecuenciaCardiaca = document.getElementById("formFrecuenciaCardiaca");
+
+if (formFrecuenciaCardiaca) {
+  formFrecuenciaCardiaca.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const frecuencia = parseInt(document.getElementById("inputFrecuencia").value);
+    const fecha = document.getElementById("inputFechaFrecuencia").value;
+    const fechaActual = new Date();
+
+    // Validaciones
+    if (!frecuencia || !fecha) {
+      return Swal.fire("Error", "Por favor, completa todos los campos.", "error");
+    }
+    if (isNaN(frecuencia) || frecuencia <= 0) {
+      return Swal.fire("Error", "La frecuencia debe ser un número válido.", "error");
+    }
+    if (frecuencia < 40 || frecuencia > 200) {
+      return Swal.fire("Error", "Debe estar entre 40 y 200 latidos por minuto.", "error");
+    }
+    const fechaRegistro = new Date(fecha);
+    if (fechaRegistro > fechaActual) {
+      return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
+    }
+
+    // Análisis del estado
+    if (frecuencia < 60) {
+      Swal.fire("Frecuencia Cardíaca Baja", "Recomendable ver a un médico.", "warning");
+    } else if (frecuencia <= 100) {
+      Swal.fire("Frecuencia Cardíaca Normal", "Sigue cuidándote.", "success");
+    } else if (frecuencia <= 120) {
+      Swal.fire("Frecuencia Cardíaca Alta", "Sugerencia visitar a un médico.", "warning");
+    } else {
+      Swal.fire("Frecuencia Cardíaca Muy Alta", "Visitar a tu médico lo antes posible.", "error");
+    }
+
+    // (Más adelante aquí agregamos el guardado en localStorage)
+
+  });
+}
