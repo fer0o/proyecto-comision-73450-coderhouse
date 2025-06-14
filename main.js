@@ -68,6 +68,138 @@ document.addEventListener("DOMContentLoaded", () => {
       renderRangosFrecuencia();
     });
   }
+  //Navegacion en historial de registros
+  const btnHistorialPresionArterial = document.getElementById(
+    "btnHistorialPresionArterial"
+  );
+  const btnHistorialRitmoCardiaco = document.getElementById(
+    "btnHistorialRitmoCardiaco"
+  );
+  // Cargamos la información del contenedor y ocultamos la informacion segun lo que se seleccione
+  const contenedorPresion = document.getElementById(
+    "contenedorPresionArterial"
+  );
+  const contenedorFrecuencia = document.getElementById(
+    "contenedorFrecuenciaCardiaca"
+  );
+
+  if (btnHistorialPresionArterial && contenedorPresion && contenedorFrecuencia) {
+    btnHistorialPresionArterial.addEventListener("click", () => {
+      contenedorFrecuencia.classList.add("hidden");
+      contenedorPresion.classList.remove("hidden");
+      mostrarHistorialPresion();
+    });
+  }
+  if (btnHistorialRitmoCardiaco && contenedorPresion && contenedorFrecuencia) {
+    btnHistorialRitmoCardiaco.addEventListener("click", () => {
+      contenedorPresion.classList.add("hidden");
+      contenedorFrecuencia.classList.remove("hidden");
+      mostrarHistorialFrecuencia();
+    });
+  }
+
+  const mostrarHistorialPresion = () => {
+    const contenedor = document.getElementById("contenedorPresionArterial");
+    contenedor.innerHTML = "";
+
+    const registros =
+      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+
+    if (registros.length === 0) {
+      contenedor.innerHTML =
+        "<p class='text-gray-600'>No hay registros de presión arterial.</p>";
+      return;
+    }
+
+    registros.forEach((registro) => {
+      const { systolic, diastolic, fecha } = registro;
+      const estado = getStatus({ systolic, diastolic });
+
+      const card = document.createElement("div");
+      card.className =
+        "bg-white shadow-md p-4 rounded-md border-l-8 " +
+        getColorFrecuencia(estado);
+
+      card.innerHTML = `
+      <p class="text-sm text-gray-600 mb-2">Fecha: <strong>${fecha}</strong></p>
+      <p class="text-md font-semibold">Sistólica: ${systolic} mmHg</p>
+      <p class="text-md font-semibold">Diastólica: ${diastolic} mmHg</p>
+      <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
+    `;
+
+      contenedor.appendChild(card);
+    });
+  }
+
+  // colores para detectar el estado de la presión arterial en la card
+  function getColorFrecuencia(estado) {
+    switch (estado) {
+      case "Low":
+        return "border-blue-400";
+      case "Normal":
+        return "border-green-500";
+      case "Risk":
+        return "border-orange-400";
+      case "High":
+        return "border-red-600";
+      default:
+        return "border-gray-300";
+    }
+  }
+  // Función para mostrar el historial de frecuencia cardiaca
+  const mostrarHistorialFrecuencia = () => {
+    const contenedor = document.getElementById("contenedorFrecuenciaCardiaca");
+    contenedor.innerHTML = "";
+
+    const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+
+    if( registros.length === 0){
+      contenedor.innerHTML =
+        "<p class='text-gray-600'>No hay registros de frecuencia cardiaca.</p>";
+      return;
+    }
+    registros.forEach((registro)=> {
+      const { frecuencia, fecha } = registro;
+      const estado = getEstadoFrecuencia(frecuencia);
+
+      const card = document.createElement("div");
+      card.className = "bg-white shadow-md p-4 rounded-md border-l-8 " +
+        getColorPresion(estado);
+      card.innerHTML = `
+      <p class="text-sm text-gray-600 mb-2">Fecha: <strong>${fecha}</strong></p>
+      <p class="text-md font-semibold">Frecuencia: ${frecuencia} lpm</p>
+      <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
+    `;
+      contenedor.appendChild(card);
+    })
+  }
+  //utilidad para determinar el estado de la frecuencia cardiaca
+  function getEstadoFrecuencia(frecuencia) {
+    if (frecuencia < 60) {
+      return "Frecuencia Baja";
+    } else if (frecuencia >= 60 && frecuencia <= 100) {
+      return "Frecuencia Normal";
+    } else if (frecuencia > 100 && frecuencia <= 120) {
+      return "Frecuencia Alta";
+    } else {
+      return "Frecuencia Muy Alta";
+    }
+  }
+  // colores para el estado de la frecuencia cardiaca
+  function getColorPresion(estado) {
+    switch (estado) {
+      case "Frecuencia Baja":
+        return "border-blue-500";
+      case "Frecuencia Normal":
+        return "border-green-500";
+      case "Frecuencia Alta":
+        return "border-orange-400";
+      case "Frecuencia Muy Alta":
+        return "border-red-600";
+      default:
+        return "border-gray-300";
+    }
+  }
 
   // Capturamos los datos del formulario de presión arterial
   const formPresionArterial = document.getElementById("formPresionArterial");
@@ -378,18 +510,18 @@ if (formFrecuenciaCardiaca) {
     }
 
     // Guardar en localStorage
-const nuevoRegistro = {
-  frecuencia,
-  fecha,
-};
+    const nuevoRegistro = {
+      frecuencia,
+      fecha,
+    };
 
-const registrosFrecuencia =
-  JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+    const registrosFrecuencia =
+      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
 
-registrosFrecuencia.push(nuevoRegistro);
-localStorage.setItem(
-  "registrosFrecuencia",
-  JSON.stringify(registrosFrecuencia)
-);
+    registrosFrecuencia.push(nuevoRegistro);
+    localStorage.setItem(
+      "registrosFrecuencia",
+      JSON.stringify(registrosFrecuencia)
+    );
   });
 }
