@@ -1,10 +1,47 @@
 // main.js
 
-// imports
-import {
-  presionInfo,
-  rangosPresion,
-} from "./utils/presionInfo/presionMockData.js";
+
+////////datos de presionModkData////////
+ const presionInfo = {
+  sistolica: {
+    titulo: "Presión arterial Sistolica",
+    descripcion:
+      "Se refiere a la presión de la sangre en la arteria cuando se contrae el corazón. Es la cifra superior (y más alta) en una medición de la presión arterial.",
+  },
+  diastolica: {
+    titulo: "Presión arterial Diastolica",
+    descripcion:
+      "Se refiere a la presión de la sangre en la arteria cuando el corazón se relaja entre latidos. Es la cifra inferior (y más baja) en una medición de la presión arterial.",
+  },
+};
+
+ const rangosPresion = [
+  {
+    nombre: "Presión Baja (Hipotensión)",
+    sistolica: "sistolica menor que 60",
+    diastolica: "diastolica menor que 60",
+    color: "bg-green-500"
+  },
+  {
+    nombre: "Presión Normal",
+    sistolica: "sistolica entre 90 y 120",
+    diastolica: "diastolica entre 61 y 80",
+    color: "bg-blue-600"
+  },
+  {
+    nombre: "Presión en Riesgo (Prehipertensión)",
+    sistolica: "sistolica entre 121 y 139",
+    diastolica: "diastolica entre 81 y 89",
+    color: "bg-orange-400"
+  },
+  {
+    nombre: "Presión Alta (Hipertensión)",
+    sistolica: "sistolica mayores a 140",
+    diastolica: "diastolica mayores a 90",
+    color: "bg-red-600"
+  }
+];
+//////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", () => {
   const vistas = {
@@ -279,24 +316,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ✅ Función para obtener el estado de la presión arterial
   function getStatus({ systolic, diastolic }) {
-    if (systolic < 60 || diastolic < 60) {
-      return "Low";
-    } else if (
-      (systolic >= 90 && systolic <= 120) ||
-      (diastolic >= 60 && diastolic <= 80)
-    ) {
-      return "Normal";
-    } else if (
-      (systolic >= 121 && systolic <= 139) ||
-      (diastolic >= 80 && diastolic <= 89)
-    ) {
-      return "Risk";
-    } else if (systolic >= 140 || diastolic >= 90) {
-      return "High";
-    } else {
-      return "Invalid";
-    }
-  }
+  const esBaja = systolic < 60 || diastolic < 60;
+  const esNormal = (systolic >= 90 && systolic <= 120) || (diastolic >= 60 && diastolic <= 80);
+  const esRiesgo = (systolic >= 121 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89);
+  const esAlta = systolic >= 140 || diastolic >= 90;
+
+  if (esBaja) return "Low";
+  if (esNormal) return "Normal";
+  if (esRiesgo) return "Risk";
+  if (esAlta) return "High";
+  return "Invalid";
+}
+  
 
   // ✅ Función para mostrar el resultado
   function mostrarResultado(status) {
@@ -353,34 +384,19 @@ const renderRangosPresion = () => {
 
   container.innerHTML = "";
 
-  rangosPresion.forEach((rango) => {
-    const div = document.createElement("div");
-    div.className = "flex flex-row items-start gap-4";
+rangosPresion.forEach((rango) => {
+  container.innerHTML += `
+    <div class="flex flex-row items-start gap-4">
+      <div class="w-12 h-12 ${rango.color}"></div>
+      <div class="text-sm text-gray-700">
+        <p class="font-bold">${rango.nombre}</p>
+        <p>sistólica: ${rango.sistolica}</p>
+        <p>diastólica: ${rango.diastolica}</p>
+      </div>
+    </div>
+  `;
+});
 
-    const colorBox = document.createElement("div");
-    colorBox.className = `w-12 h-12 ${rango.color}`;
-
-    const textContainer = document.createElement("div");
-    textContainer.className = "text-sm text-gray-700";
-
-    const nombre = document.createElement("p");
-    nombre.className = "font-bold";
-    nombre.textContent = rango.nombre;
-
-    const sistolica = document.createElement("p");
-    sistolica.textContent = `sistolica ${rango.sistolica}`;
-
-    const diastolica = document.createElement("p");
-    diastolica.textContent = `diastolica ${rango.diastolica}`;
-
-    textContainer.appendChild(nombre);
-    textContainer.appendChild(sistolica);
-    textContainer.appendChild(diastolica);
-
-    div.appendChild(colorBox);
-    div.appendChild(textContainer);
-    container.appendChild(div);
-  });
 };
 //////////Frecuencia cardiaca/////////////
 
@@ -414,31 +430,18 @@ const renderRangosFrecuencia = () => {
 
   container.innerHTML = "";
 
-  rangosFrecuencia.forEach((rango) => {
-    const div = document.createElement("div");
-    div.className = "flex flex-row items-start gap-4";
+rangosFrecuencia.forEach((rango) => {
+  container.innerHTML += `
+    <div class="flex flex-row items-start gap-4">
+      <div class="w-12 h-12 ${rango.color}"></div>
+      <div class="text-sm text-gray-700">
+        <p class="font-bold">${rango.nombre}</p>
+        <p>valor: ${rango.valor}</p>
+      </div>
+    </div>
+  `;
+});
 
-    const colorBox = document.createElement("div");
-    colorBox.className = `w-12 h-12 ${rango.color}`;
-
-    const textContainer = document.createElement("div");
-    textContainer.className = "text-sm text-gray-700";
-
-    const nombre = document.createElement("p");
-    nombre.className = "font-bold";
-    nombre.textContent = rango.nombre;
-
-    const valor = document.createElement("p");
-    valor.textContent = `valor: ${rango.valor}`;
-
-    const descripcion = document.createElement("p");
-    textContainer.appendChild(nombre);
-    textContainer.appendChild(valor);
-
-    div.appendChild(colorBox);
-    div.appendChild(textContainer);
-    container.appendChild(div);
-  });
 };
 // Función para registrar frecuencia cardiaca
 const formFrecuenciaCardiaca = document.getElementById(
