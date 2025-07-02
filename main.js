@@ -197,25 +197,110 @@ document.addEventListener("DOMContentLoaded", () => {
         return "border-gray-300";
     }
   }
-  // Evento para eliminar un registro de presión arterial
-  document
+  // Función para editar un registro de presión arterial y eliminar el registro
+document
   .getElementById("contenedorPresionArterial")
   .addEventListener("click", function (e) {
+    const id = e.target.dataset.id;
+
     if (e.target.classList.contains("btn-eliminar")) {
-      const id = e.target.dataset.id;
       eliminarRegistroPresion(id);
     }
-  });
-  
-  // Evento para editar un registro de presión arterial
-  document
-  .getElementById("contenedorPresionArterial")
-  .addEventListener("click", function (e) {
+
     if (e.target.classList.contains("btn-editar")) {
-      const id = e.target.dataset.id;
-      editarRegistroPresion(id);
+      editarRegistroPresion(id, e.target.closest("div.shadow-md"));
+    }
+
+    if (e.target.classList.contains("btn-guardar-edicion")) {
+      guardarEdicionPresion(id, e.target.closest("div.shadow-md"));
+    }
+
+    if (e.target.classList.contains("btn-cancelar-edicion")) {
+      mostrarHistorialPresion();
     }
   });
+function editarRegistroPresion(id, card) {
+  const registros = JSON.parse(localStorage.getItem("registrosPresion")) || [];
+  const registro = registros.find((r) => r.id === id);
+
+  if (!registro) return;
+
+  const { systolic, diastolic, fecha } = registro;
+
+  // Reemplazar el contenido de la card por inputs editables
+  card.innerHTML = `
+    <div class="flex flex-col space-y-4">
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Fecha:</label>
+        <input type="date" class="w-full border rounded px-2 py-1 text-sm" value="${fecha}" id="editFecha">
+
+        <label class="block text-sm text-gray-700 mt-2 mb-1">Sistólica:</label>
+        <input type="number" class="w-full border rounded px-2 py-1 text-sm" value="${systolic}" id="editSistolica">
+
+        <label class="block text-sm text-gray-700 mt-2 mb-1">Diastólica:</label>
+        <input type="number" class="w-full border rounded px-2 py-1 text-sm" value="${diastolic}" id="editDiastolica">
+      </div>
+
+      <div class="flex flex-row justify-center gap-2">
+        <button class="btn-guardar-edicion bg-green-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Guardar</button>
+        <button class="btn-cancelar-edicion bg-gray-400 text-white px-4 py-2 rounded text-sm">Cancelar</button>
+      </div>
+    </div>
+  `;
+}
+
+function guardarEdicionPresion(id, card) {
+const inputSistolica = card.querySelector("#editSistolica").value;
+const inputDiastolica = card.querySelector("#editDiastolica").value;
+const inputFecha = card.querySelector("#editFecha").value;
+
+
+  if (!inputSistolica || !inputDiastolica || !inputFecha) {
+    return Swal.fire("Error", "Todos los campos son obligatorios.", "error");
+  }
+
+  const systolic = parseInt(inputSistolica);
+  const diastolic = parseInt(inputDiastolica);
+  const fechaRegistro = new Date(inputFecha);
+  const fechaActual = new Date();
+  const fechaMinima = new Date("2000-01-01");
+
+  if (isNaN(systolic) || isNaN(diastolic)) {
+    return Swal.fire("Error", "Los valores deben ser numéricos.", "error");
+  }
+  if (systolic < 40 || systolic > 250) {
+    return Swal.fire("Error", "Sistólica fuera de rango (40-250).", "error");
+  }
+  if (diastolic < 30 || diastolic > 150) {
+    return Swal.fire("Error", "Diastólica fuera de rango (30-150).", "error");
+  }
+  if (fechaRegistro > fechaActual) {
+    return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
+  }
+  if (fechaRegistro < fechaMinima) {
+    return Swal.fire(
+      "Error",
+      "La fecha debe ser posterior al 1 de enero de 2000.",
+      "error"
+    );
+  }
+
+  // ✅ Reemplazar en localStorage
+  const registros =
+    JSON.parse(localStorage.getItem("registrosPresion")) || [];
+
+  const nuevosRegistros = registros.map((registro) =>
+    registro.id === id
+      ? { ...registro, systolic, diastolic, fecha: inputFecha }
+      : registro
+  );
+
+  localStorage.setItem("registrosPresion", JSON.stringify(nuevosRegistros));
+
+  Swal.fire("Actualizado", "El registro fue editado exitosamente.", "success");
+  mostrarHistorialPresion(); // Recargar vista
+}
+
 
   
 
