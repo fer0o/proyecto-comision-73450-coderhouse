@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <p class="mt-1 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
     </div>
     <div class="flex flex-row justify-center gap-2 ">
-      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-fecha="${fecha}">Editar</button>
+      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-id="${id}">Editar</button>
       <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
     </div>
   </div>
@@ -206,6 +206,18 @@ document.addEventListener("DOMContentLoaded", () => {
       eliminarRegistroPresion(id);
     }
   });
+  
+  // Evento para editar un registro de presión arterial
+  document
+  .getElementById("contenedorPresionArterial")
+  .addEventListener("click", function (e) {
+    if (e.target.classList.contains("btn-editar")) {
+      const id = e.target.dataset.id;
+      editarRegistroPresion(id);
+    }
+  });
+
+  
 
 function eliminarRegistroPresion(id) {
   const registros = JSON.parse(localStorage.getItem("registrosPresion")) || [];
