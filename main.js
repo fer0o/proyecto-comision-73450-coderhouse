@@ -563,9 +563,6 @@ document
     }
   });
 }
-
-
- 
   // ✅ Función para mostrar el resultado
   function mostrarResultado(status) {
     switch (status) {
