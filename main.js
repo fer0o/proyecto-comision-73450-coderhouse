@@ -137,7 +137,8 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarHistorialFrecuencia();
     });
   }
-
+////////////////////////////presion arterial////////////////////////////////////
+// Función para mostrar el historial de presión arterial
   const mostrarHistorialPresion = () => {
     const contenedor = document.getElementById("contenedorPresionArterial");
     contenedor.innerHTML = "";
@@ -152,7 +153,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`;
       return;
     }
-
     registros.forEach((registro) => {
       const {id, systolic, diastolic, fecha } = registro;
       const estado = getStatus({ systolic, diastolic });
@@ -327,120 +327,7 @@ function eliminarRegistroPresion(id) {
   });
 }
 
-
-
-  /////////////////////////////////////Frecuencia cardiaca////////////////////////////////////
-  // Función para mostrar el historial de frecuencia cardiaca
-  const mostrarHistorialFrecuencia = () => {
-    const contenedor = document.getElementById("contenedorFrecuenciaCardiaca");
-    contenedor.innerHTML = "";
-
-    const registros =
-      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
-
-    if (registros.length === 0) {
-      contenedor.innerHTML = `
-      <div class = "flex justify-center items-center h-full">
-        <p class='text-gray-600 text-lg font-bold'>No hay registros de frecuencia cardiaca.</p>
-      </div>
-      `;
-      return;
-    }
-    registros.forEach((registro) => {
-      const { id, frecuencia, fecha } = registro;
-      const estado = getEstadoFrecuencia(frecuencia);
-
-      const card = document.createElement("div");
-      card.className =
-        "bg-white shadow-md p-4 rounded-md border-l-8 " +
-        getColorPresion(estado);
-      card.innerHTML = `
-        <div class="flex flex-col space-y-4">
-    <div>
-      <p class="text-sm text-gray-600 mb-1">Fecha: <strong>${fecha}</strong></p>
-      <p class="text-md font-semibold">Frecuencia: ${frecuencia} lpm</p>
-      <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
-    </div>
-    <div class="flex flex-row justify-center gap-2 ">
-      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-fecha="${fecha}">Editar</button>
-      <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
-    </div>
-  </div>
-    `;
-      contenedor.appendChild(card);
-    });
-  };
-  //utilidad para determinar el estado de la frecuencia cardiaca
-  function getEstadoFrecuencia(frecuencia) {
-    if (frecuencia < 60) {
-      return "Frecuencia Baja";
-    } else if (frecuencia >= 60 && frecuencia <= 100) {
-      return "Frecuencia Normal";
-    } else if (frecuencia > 100 && frecuencia <= 120) {
-      return "Frecuencia Alta";
-    } else {
-      return "Frecuencia Muy Alta";
-    }
-  }
-  // colores para el estado de la frecuencia cardiaca
-  function getColorPresion(estado) {
-    switch (estado) {
-      case "Frecuencia Baja":
-        return "border-blue-500";
-      case "Frecuencia Normal":
-        return "border-green-500";
-      case "Frecuencia Alta":
-        return "border-orange-400";
-      case "Frecuencia Muy Alta":
-        return "border-red-600";
-      default:
-        return "border-gray-300";
-    }
-  }
-document
-  .getElementById("contenedorFrecuenciaCardiaca")
-  .addEventListener("click", function (e) {
-    if (e.target.classList.contains("btn-eliminar")) {
-      const id = e.target.dataset.id;
-      eliminarRegistroFrecuencia(id);
-    }
-  });
-
-
-  function eliminarRegistroFrecuencia(id) {
-  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
-
-  const nuevosRegistros = registros.filter((registro) => registro.id !== id);
-
-  Swal.fire({
-    title: "¿Estás seguro?",
-    text: "Este registro será eliminado permanentemente.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#e3342f",
-    cancelButtonColor: "#6c757d",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      localStorage.setItem("registrosFrecuencia", JSON.stringify(nuevosRegistros));
-      mostrarHistorialFrecuencia();
-      Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
-    }
-  });
-}
-
-
-  // Capturamos los datos del formulario de presión arterial
-  const formPresionArterial = document.getElementById("formPresionArterial");
-  if (formPresionArterial) {
-    formPresionArterial.addEventListener("submit", (event) => {
-      event.preventDefault();
-      calcularPresion();
-    });
-  }
-
-  // ✅ Función para calcular la presión arterial
+ // ✅ Función para calcular la presión arterial
   function calcularPresion() {
     const inputSistolica = document.getElementById("inputSistolica").value;
     const inputDiastolica = document.getElementById("inputDiastolica").value;
@@ -516,6 +403,15 @@ document
     localStorage.setItem("registrosPresion", JSON.stringify(registrosPresion));
   }
 
+   // Capturamos los datos del formulario de presión arterial
+  const formPresionArterial = document.getElementById("formPresionArterial");
+  if (formPresionArterial) {
+    formPresionArterial.addEventListener("submit", (event) => {
+      event.preventDefault();
+      calcularPresion();
+    });
+  }
+
   // ✅ Función para obtener el estado de la presión arterial
   function getStatus({ systolic, diastolic }) {
     const esBaja = systolic < 60 || diastolic < 60;
@@ -533,7 +429,143 @@ document
     if (esAlta) return "High";
     return "Invalid";
   }
+  // ✅ Función flecha para mostrar la información de la presión arterial
+const cargarInformacionPresion = () => {
+  const container = document.getElementById("presionInfoContainer");
 
+  // Verificamos si existe el contenedor
+  if (container) {
+    container.innerHTML = `
+      <div>
+        <p><b>${presionInfo.sistolica.titulo}:</b> ${presionInfo.sistolica.descripcion}</p>
+        <p><b>${presionInfo.diastolica.titulo}:</b> ${presionInfo.diastolica.descripcion}</p>
+      </div>
+    `;
+  }
+};
+//mostrar los datos de los rangos de presión arterial del presionMockData.js
+const renderRangosPresion = () => {
+  const container = document.getElementById("rangoPresionContainer");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  rangosPresion.forEach((rango) => {
+    container.innerHTML += `
+    <div class="flex flex-row items-start gap-4">
+      <div class="w-12 h-12 ${rango.color}"></div>
+      <div class="text-sm text-gray-700">
+        <p class="font-bold">${rango.nombre}</p>
+        <p>sistólica: ${rango.sistolica}</p>
+        <p>diastólica: ${rango.diastolica}</p>
+      </div>
+    </div>
+  `;
+  });
+};
+  /////////////////////////////////////Frecuencia cardiaca////////////////////////////////////
+  // Función para mostrar el historial de frecuencia cardiaca
+  const mostrarHistorialFrecuencia = () => {
+    const contenedor = document.getElementById("contenedorFrecuenciaCardiaca");
+    contenedor.innerHTML = "";
+
+    const registros =
+      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+
+    if (registros.length === 0) {
+      contenedor.innerHTML = `
+      <div class = "flex justify-center items-center h-full">
+        <p class='text-gray-600 text-lg font-bold'>No hay registros de frecuencia cardiaca.</p>
+      </div>
+      `;
+      return;
+    }
+    registros.forEach((registro) => {
+      const { id, frecuencia, fecha } = registro;
+      const estado = getEstadoFrecuencia(frecuencia);
+
+      const card = document.createElement("div");
+      card.className =
+        "bg-white shadow-md p-4 rounded-md border-l-8 " +
+        getColorPresion(estado);
+      card.innerHTML = `
+        <div class="flex flex-col space-y-4">
+    <div>
+      <p class="text-sm text-gray-600 mb-1">Fecha: <strong>${fecha}</strong></p>
+      <p class="text-md font-semibold">Frecuencia: ${frecuencia} lpm</p>
+      <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
+    </div>
+    <div class="flex flex-row justify-center gap-2 ">
+      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-fecha="${id}">Editar</button>
+      <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
+    </div>
+  </div>
+    `;
+      contenedor.appendChild(card);
+    });
+  };
+  //utilidad para determinar el estado de la frecuencia cardiaca
+  function getEstadoFrecuencia(frecuencia) {
+    if (frecuencia < 60) {
+      return "Frecuencia Baja";
+    } else if (frecuencia >= 60 && frecuencia <= 100) {
+      return "Frecuencia Normal";
+    } else if (frecuencia > 100 && frecuencia <= 120) {
+      return "Frecuencia Alta";
+    } else {
+      return "Frecuencia Muy Alta";
+    }
+  }
+  // colores para el estado de la frecuencia cardiaca
+  function getColorPresion(estado) {
+    switch (estado) {
+      case "Frecuencia Baja":
+        return "border-blue-500";
+      case "Frecuencia Normal":
+        return "border-green-500";
+      case "Frecuencia Alta":
+        return "border-orange-400";
+      case "Frecuencia Muy Alta":
+        return "border-red-600";
+      default:
+        return "border-gray-300";
+    }
+  }
+document
+  .getElementById("contenedorFrecuenciaCardiaca")
+  .addEventListener("click", function (e) {
+    if (e.target.classList.contains("btn-eliminar")) {
+      const id = e.target.dataset.id;
+      eliminarRegistroFrecuencia(id);
+    }
+  });
+
+
+  function eliminarRegistroFrecuencia(id) {
+  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+
+  const nuevosRegistros = registros.filter((registro) => registro.id !== id);
+
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "Este registro será eliminado permanentemente.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#e3342f",
+    cancelButtonColor: "#6c757d",
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.setItem("registrosFrecuencia", JSON.stringify(nuevosRegistros));
+      mostrarHistorialFrecuencia();
+      Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
+    }
+  });
+}
+
+
+ 
   // ✅ Función para mostrar el resultado
   function mostrarResultado(status) {
     switch (status) {
@@ -568,40 +600,7 @@ document
   }
 });
 
-// ✅ Función flecha para mostrar la información de la presión arterial
-const cargarInformacionPresion = () => {
-  const container = document.getElementById("presionInfoContainer");
 
-  // Verificamos si existe el contenedor
-  if (container) {
-    container.innerHTML = `
-      <div>
-        <p><b>${presionInfo.sistolica.titulo}:</b> ${presionInfo.sistolica.descripcion}</p>
-        <p><b>${presionInfo.diastolica.titulo}:</b> ${presionInfo.diastolica.descripcion}</p>
-      </div>
-    `;
-  }
-};
-//mostrar los datos de los rangos de presión arterial del presionMockData.js
-const renderRangosPresion = () => {
-  const container = document.getElementById("rangoPresionContainer");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  rangosPresion.forEach((rango) => {
-    container.innerHTML += `
-    <div class="flex flex-row items-start gap-4">
-      <div class="w-12 h-12 ${rango.color}"></div>
-      <div class="text-sm text-gray-700">
-        <p class="font-bold">${rango.nombre}</p>
-        <p>sistólica: ${rango.sistolica}</p>
-        <p>diastólica: ${rango.diastolica}</p>
-      </div>
-    </div>
-  `;
-  });
-};
 //////////Frecuencia cardiaca/////////////
 
 // Datos locales de rangos de frecuencia cardiaca
