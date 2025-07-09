@@ -300,10 +300,6 @@ const inputFecha = card.querySelector("#editFecha").value;
   Swal.fire("Actualizado", "El registro fue editado exitosamente.", "success");
   mostrarHistorialPresion(); // Recargar vista
 }
-
-
-  
-
 function eliminarRegistroPresion(id) {
   const registros = JSON.parse(localStorage.getItem("registrosPresion")) || [];
 
@@ -496,7 +492,7 @@ const renderRangosPresion = () => {
       <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
     </div>
     <div class="flex flex-row justify-center gap-2 ">
-      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-fecha="${id}">Editar</button>
+      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-id="${id}">Editar</button>
       <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
     </div>
   </div>
@@ -504,6 +500,8 @@ const renderRangosPresion = () => {
       contenedor.appendChild(card);
     });
   };
+
+
   //utilidad para determinar el estado de la frecuencia cardiaca
   function getEstadoFrecuencia(frecuencia) {
     if (frecuencia < 60) {
@@ -531,14 +529,31 @@ const renderRangosPresion = () => {
         return "border-gray-300";
     }
   }
+
+  // Función para editar un registro de frecuencia cardiaca
 document
   .getElementById("contenedorFrecuenciaCardiaca")
   .addEventListener("click", function (e) {
+    const id = e.target.dataset.id;
+
     if (e.target.classList.contains("btn-eliminar")) {
-      const id = e.target.dataset.id;
       eliminarRegistroFrecuencia(id);
     }
+
+    if (e.target.classList.contains("btn-editar")) {
+      editarRegistroFrecuencia(id, e.target.closest("div.shadow-md"));
+    }
+
+    if (e.target.classList.contains("btn-guardar-edicion")) {
+      guardarEdicionFrecuencia(id, e.target.closest("div.shadow-md"));
+    }
+
+    if (e.target.classList.contains("btn-cancelar-edicion")) {
+      mostrarHistorialFrecuencia();
+    }
   });
+
+
 
 
   function eliminarRegistroFrecuencia(id) {
@@ -563,6 +578,75 @@ document
     }
   });
 }
+
+//funcion para editar un registro de frecuencia cardiaca
+function editarRegistroFrecuencia(id, card) {
+  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+  const registro = registros.find((r) => r.id === id);
+
+  if (!registro) return;
+
+  const { frecuencia, fecha } = registro;
+
+  // Reemplazamos el contenido de la card con inputs para editar
+  card.innerHTML = `
+    <div class="flex flex-col space-y-4">
+      <div>
+        <label class="block text-sm text-gray-700 mb-1">Fecha:</label>
+        <input type="date" class="w-full border rounded px-2 py-1 text-sm" value="${fecha}" id="editFechaFrecuencia">
+
+        <label class="block text-sm text-gray-700 mt-2 mb-1">Frecuencia (lpm):</label>
+        <input type="number" class="w-full border rounded px-2 py-1 text-sm" value="${frecuencia}" id="editFrecuencia">
+      </div>
+
+      <div class="flex flex-row justify-center gap-2">
+        <button class="btn-guardar-edicion bg-green-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Guardar</button>
+        <button class="btn-cancelar-edicion bg-gray-400 text-white px-4 py-2 rounded text-sm">Cancelar</button>
+      </div>
+    </div>
+  `;
+}
+// Función para guardar la edición de un registro de frecuencia cardiaca
+function guardarEdicionFrecuencia(id, card) {
+  const inputFrecuencia = card.querySelector("#editFrecuencia").value;
+  const inputFecha = card.querySelector("#editFechaFrecuencia").value;
+
+  if (!inputFrecuencia || !inputFecha) {
+    return Swal.fire("Error", "Todos los campos son obligatorios.", "error");
+  }
+
+  const frecuencia = parseInt(inputFrecuencia);
+  const fechaRegistro = new Date(inputFecha);
+  const fechaActual = new Date();
+  const fechaMinima = new Date("2000-01-01");
+
+  if (isNaN(frecuencia)) {
+    return Swal.fire("Error", "La frecuencia debe ser un número válido.", "error");
+  }
+  if (frecuencia < 40 || frecuencia > 200) {
+    return Swal.fire("Error", "Debe estar entre 40 y 200 latidos por minuto.", "error");
+  }
+  if (fechaRegistro > fechaActual) {
+    return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
+  }
+  if (fechaRegistro < fechaMinima) {
+    return Swal.fire("Error", "La fecha debe ser posterior al 1 de enero de 2000.", "error");
+  }
+
+  // Actualizar el registro
+  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+  const nuevosRegistros = registros.map((r) =>
+    r.id === id ? { ...r, frecuencia, fecha: inputFecha } : r
+  );
+
+  localStorage.setItem("registrosFrecuencia", JSON.stringify(nuevosRegistros));
+
+  Swal.fire("Actualizado", "El registro fue editado exitosamente.", "success");
+  mostrarHistorialFrecuencia(); // Recargar la vista
+}
+
+
+
   // ✅ Función para mostrar el resultado
   function mostrarResultado(status) {
     switch (status) {
