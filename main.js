@@ -1,48 +1,38 @@
 // main.js
 
-////////datos de presionModkData////////
-const presionInfo = {
-  sistolica: {
-    titulo: "Presión arterial Sistolica",
-    descripcion:
-      "Se refiere a la presión de la sangre en la arteria cuando se contrae el corazón. Es la cifra superior (y más alta) en una medición de la presión arterial.",
-  },
-  diastolica: {
-    titulo: "Presión arterial Diastolica",
-    descripcion:
-      "Se refiere a la presión de la sangre en la arteria cuando el corazón se relaja entre latidos. Es la cifra inferior (y más baja) en una medición de la presión arterial.",
-  },
-};
+////////datos de presionModkData por fetch////////
+let presionInfo = {}
+let rangosPresion = [];
 
-const rangosPresion = [
-  {
-    nombre: "Presión Baja (Hipotensión)",
-    sistolica: "sistolica menor que 60",
-    diastolica: "diastolica menor que 60",
-    color: "bg-green-500",
-  },
-  {
-    nombre: "Presión Normal",
-    sistolica: "sistolica entre 90 y 120",
-    diastolica: "diastolica entre 61 y 80",
-    color: "bg-blue-600",
-  },
-  {
-    nombre: "Presión en Riesgo (Prehipertensión)",
-    sistolica: "sistolica entre 121 y 139",
-    diastolica: "diastolica entre 81 y 89",
-    color: "bg-orange-400",
-  },
-  {
-    nombre: "Presión Alta (Hipertensión)",
-    sistolica: "sistolica mayores a 140",
-    diastolica: "diastolica mayores a 90",
-    color: "bg-red-600",
-  },
-];
+const cargarDatosPresion = async () => {
+  try{
+    const response = await fetch ('./data/presionInfo.json')
+    if (!response.ok){
+      throw new Error('Error al cargar los datos de presión arterial');
+    }
+    const data = await response.json()
+    presionInfo = data.presionInfo;
+    rangosPresion = data.rangosPresion;
+
+  
+    // ✅ Si necesitas renderizar info al inicio:
+    // cargarInformacionPresion();
+    // renderRangosPresion();
+  }
+  catch (error) {
+    console.error ('Error al cargar los datos de presión arterial:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudieron cargar los datos de presión arterial. Inténtalo más tarde.',
+    });
+  }
+}
+
 //////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", () => {
+  cargarDatosPresion()
   const vistas = {
     menu: document.getElementById("vistaMenu"),
     medicion: document.getElementById("vistaMedicion"),
@@ -50,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
     ayuda: document.getElementById("vistaAyuda"),
     presion: document.getElementById("vistaPresionArterial"),
     frecuencia: document.getElementById("vistaFrecuenciaCardiaca"),
+    
+    
   };
 
   const mostrarVista = (vistaSeleccionada) => {
