@@ -1,0 +1,24 @@
+{
+  "rangosFrecuencia": [
+    {
+      "nombre": "Frecuencia Baja",
+      "valor": "< 60",
+      "color": "bg-blue-500"
+    },
+    {
+      "nombre": "Frecuencia Normal",
+      "valor": "60 - 100",
+      "color": "bg-green-500"
+    },
+    {
+      "nombre": "Frecuencia Alta",
+      "valor": "101 - 120",
+      "color": "bg-orange-400"
+    },
+    {
+      "nombre": "Frecuencia Muy Alta",
+      "valor": "> 120",
+      "color": "bg-red-600"
+    }
+  ]
+}

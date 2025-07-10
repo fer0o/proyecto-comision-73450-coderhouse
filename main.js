@@ -1,38 +1,58 @@
 // main.js
 
 ////////datos de presionModkData por fetch////////
-let presionInfo = {}
+let presionInfo = {};
 let rangosPresion = [];
+let rangosFrecuencia = [];
 
+// fetch para cargar los datos de presión arterial
 const cargarDatosPresion = async () => {
-  try{
-    const response = await fetch ('./data/presionInfo.json')
-    if (!response.ok){
-      throw new Error('Error al cargar los datos de presión arterial');
+  try {
+    const response = await fetch("./data/presionInfo.json");
+    if (!response.ok) {
+      throw new Error("Error al cargar los datos de presión arterial");
     }
-    const data = await response.json()
+    const data = await response.json();
     presionInfo = data.presionInfo;
     rangosPresion = data.rangosPresion;
 
-  
     // ✅ Si necesitas renderizar info al inicio:
     // cargarInformacionPresion();
     // renderRangosPresion();
-  }
-  catch (error) {
-    console.error ('Error al cargar los datos de presión arterial:', error);
+  } catch (error) {
+    console.error("Error al cargar los datos de presión arterial:", error);
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudieron cargar los datos de presión arterial. Inténtalo más tarde.',
+      icon: "error",
+      title: "Error",
+      text: "No se pudieron cargar los datos de presión arterial. Inténtalo más tarde.",
     });
   }
-}
+};
+// fetch para cargar los datos de frecuencia cardiaca
+const cargarDatosFrecuencia = async () => {
+  try {
+    const response = await fetch("./data/frecuenciaInfo.json");
+    if (!response.ok) {
+      throw new Error("Error al cargar los datos de frecuencia cardiaca");
+    }
+    const data = await response.json();
+    rangosFrecuencia = data.rangosFrecuencia;
+  } catch (error) {
+    console.error("Error al cargar los datos de frecuencia cardiaca:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "No se pudieron cargar los datos de frecuencia cardiaca. Inténtalo más tarde.",
+    });
+  }
+};
 
 //////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", () => {
-  cargarDatosPresion()
+  cargarDatosPresion();
+  cargarDatosFrecuencia();
+  // Inicializamos la vista de menú al cargar la página
   const vistas = {
     menu: document.getElementById("vistaMenu"),
     medicion: document.getElementById("vistaMedicion"),
@@ -40,8 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
     ayuda: document.getElementById("vistaAyuda"),
     presion: document.getElementById("vistaPresionArterial"),
     frecuencia: document.getElementById("vistaFrecuenciaCardiaca"),
-    
-    
   };
 
   const mostrarVista = (vistaSeleccionada) => {
@@ -92,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnRitmoCardiaco) {
     btnRitmoCardiaco.addEventListener("click", () => {
       mostrarVista("frecuencia");
-      console.log("Ritmo Cardíaco seleccionado");
       renderRangosFrecuencia();
     });
   }
@@ -129,8 +146,8 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarHistorialFrecuencia();
     });
   }
-////////////////////////////presion arterial////////////////////////////////////
-// Función para mostrar el historial de presión arterial
+  ////////////////////////////presion arterial////////////////////////////////////
+  // Función para mostrar el historial de presión arterial
   const mostrarHistorialPresion = () => {
     const contenedor = document.getElementById("contenedorPresionArterial");
     contenedor.innerHTML = "";
@@ -146,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     registros.forEach((registro) => {
-      const {id, systolic, diastolic, fecha } = registro;
+      const { id, systolic, diastolic, fecha } = registro;
       const estado = getStatus({ systolic, diastolic });
 
       const card = document.createElement("div");
@@ -190,37 +207,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   // Función para editar un registro de presión arterial y eliminar el registro
-document
-  .getElementById("contenedorPresionArterial")
-  .addEventListener("click", function (e) {
-    const id = e.target.dataset.id;
+  document
+    .getElementById("contenedorPresionArterial")
+    .addEventListener("click", function (e) {
+      const id = e.target.dataset.id;
 
-    if (e.target.classList.contains("btn-eliminar")) {
-      eliminarRegistroPresion(id);
-    }
+      if (e.target.classList.contains("btn-eliminar")) {
+        eliminarRegistroPresion(id);
+      }
 
-    if (e.target.classList.contains("btn-editar")) {
-      editarRegistroPresion(id, e.target.closest("div.shadow-md"));
-    }
+      if (e.target.classList.contains("btn-editar")) {
+        editarRegistroPresion(id, e.target.closest("div.shadow-md"));
+      }
 
-    if (e.target.classList.contains("btn-guardar-edicion")) {
-      guardarEdicionPresion(id, e.target.closest("div.shadow-md"));
-    }
+      if (e.target.classList.contains("btn-guardar-edicion")) {
+        guardarEdicionPresion(id, e.target.closest("div.shadow-md"));
+      }
 
-    if (e.target.classList.contains("btn-cancelar-edicion")) {
-      mostrarHistorialPresion();
-    }
-  });
-function editarRegistroPresion(id, card) {
-  const registros = JSON.parse(localStorage.getItem("registrosPresion")) || [];
-  const registro = registros.find((r) => r.id === id);
+      if (e.target.classList.contains("btn-cancelar-edicion")) {
+        mostrarHistorialPresion();
+      }
+    });
+  function editarRegistroPresion(id, card) {
+    const registros =
+      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+    const registro = registros.find((r) => r.id === id);
 
-  if (!registro) return;
+    if (!registro) return;
 
-  const { systolic, diastolic, fecha } = registro;
+    const { systolic, diastolic, fecha } = registro;
 
-  // Reemplazar el contenido de la card por inputs editables
-  card.innerHTML = `
+    // Reemplazar el contenido de la card por inputs editables
+    card.innerHTML = `
     <div class="flex flex-col space-y-4">
       <div>
         <label class="block text-sm text-gray-700 mb-1">Fecha:</label>
@@ -239,83 +257,94 @@ function editarRegistroPresion(id, card) {
       </div>
     </div>
   `;
-}
-
-function guardarEdicionPresion(id, card) {
-const inputSistolica = card.querySelector("#editSistolica").value;
-const inputDiastolica = card.querySelector("#editDiastolica").value;
-const inputFecha = card.querySelector("#editFecha").value;
-
-
-  if (!inputSistolica || !inputDiastolica || !inputFecha) {
-    return Swal.fire("Error", "Todos los campos son obligatorios.", "error");
   }
 
-  const systolic = parseInt(inputSistolica);
-  const diastolic = parseInt(inputDiastolica);
-  const fechaRegistro = new Date(inputFecha);
-  const fechaActual = new Date();
-  const fechaMinima = new Date("2000-01-01");
+  function guardarEdicionPresion(id, card) {
+    const inputSistolica = card.querySelector("#editSistolica").value;
+    const inputDiastolica = card.querySelector("#editDiastolica").value;
+    const inputFecha = card.querySelector("#editFecha").value;
 
-  if (isNaN(systolic) || isNaN(diastolic)) {
-    return Swal.fire("Error", "Los valores deben ser numéricos.", "error");
-  }
-  if (systolic < 40 || systolic > 250) {
-    return Swal.fire("Error", "Sistólica fuera de rango (40-250).", "error");
-  }
-  if (diastolic < 30 || diastolic > 150) {
-    return Swal.fire("Error", "Diastólica fuera de rango (30-150).", "error");
-  }
-  if (fechaRegistro > fechaActual) {
-    return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
-  }
-  if (fechaRegistro < fechaMinima) {
-    return Swal.fire(
-      "Error",
-      "La fecha debe ser posterior al 1 de enero de 2000.",
-      "error"
-    );
-  }
-
-  // ✅ Reemplazar en localStorage
-  const registros =
-    JSON.parse(localStorage.getItem("registrosPresion")) || [];
-
-  const nuevosRegistros = registros.map((registro) =>
-    registro.id === id
-      ? { ...registro, systolic, diastolic, fecha: inputFecha }
-      : registro
-  );
-
-  localStorage.setItem("registrosPresion", JSON.stringify(nuevosRegistros));
-
-  Swal.fire("Actualizado", "El registro fue editado exitosamente.", "success");
-  mostrarHistorialPresion(); // Recargar vista
-}
-function eliminarRegistroPresion(id) {
-  const registros = JSON.parse(localStorage.getItem("registrosPresion")) || [];
-
-  const nuevosRegistros = registros.filter((registro) => registro.id !== id);
-
-  Swal.fire({
-    title: "¿Estás seguro?",
-    text: "Este registro será eliminado permanentemente.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#e3342f",
-    cancelButtonColor: "#6c757d",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      localStorage.setItem("registrosPresion", JSON.stringify(nuevosRegistros));
-      mostrarHistorialPresion();
-      Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
+    if (!inputSistolica || !inputDiastolica || !inputFecha) {
+      return Swal.fire("Error", "Todos los campos son obligatorios.", "error");
     }
-  });
-}
 
- // ✅ Función para calcular la presión arterial
+    const systolic = parseInt(inputSistolica);
+    const diastolic = parseInt(inputDiastolica);
+    const fechaRegistro = new Date(inputFecha);
+    const fechaActual = new Date();
+    const fechaMinima = new Date("2000-01-01");
+
+    if (isNaN(systolic) || isNaN(diastolic)) {
+      return Swal.fire("Error", "Los valores deben ser numéricos.", "error");
+    }
+    if (systolic < 40 || systolic > 250) {
+      return Swal.fire("Error", "Sistólica fuera de rango (40-250).", "error");
+    }
+    if (diastolic < 30 || diastolic > 150) {
+      return Swal.fire("Error", "Diastólica fuera de rango (30-150).", "error");
+    }
+    if (fechaRegistro > fechaActual) {
+      return Swal.fire(
+        "Error",
+        "La fecha no puede estar en el futuro.",
+        "error"
+      );
+    }
+    if (fechaRegistro < fechaMinima) {
+      return Swal.fire(
+        "Error",
+        "La fecha debe ser posterior al 1 de enero de 2000.",
+        "error"
+      );
+    }
+
+    // ✅ Reemplazar en localStorage
+    const registros =
+      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+
+    const nuevosRegistros = registros.map((registro) =>
+      registro.id === id
+        ? { ...registro, systolic, diastolic, fecha: inputFecha }
+        : registro
+    );
+
+    localStorage.setItem("registrosPresion", JSON.stringify(nuevosRegistros));
+
+    Swal.fire(
+      "Actualizado",
+      "El registro fue editado exitosamente.",
+      "success"
+    );
+    mostrarHistorialPresion(); // Recargar vista
+  }
+  function eliminarRegistroPresion(id) {
+    const registros =
+      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+
+    const nuevosRegistros = registros.filter((registro) => registro.id !== id);
+
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Este registro será eliminado permanentemente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e3342f",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.setItem(
+          "registrosPresion",
+          JSON.stringify(nuevosRegistros)
+        );
+        mostrarHistorialPresion();
+        Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
+      }
+    });
+  }
+
+  // ✅ Función para calcular la presión arterial
   function calcularPresion() {
     const inputSistolica = document.getElementById("inputSistolica").value;
     const inputDiastolica = document.getElementById("inputDiastolica").value;
@@ -330,7 +359,7 @@ function eliminarRegistroPresion(id) {
       return;
     }
 
-    const systolic = parseInt(inputSistolica);
+    const systolic = parseInt(inputSistolica);    
     const diastolic = parseInt(inputDiastolica);
     const fechaRegistro = new Date(inputFecha);
     const fechaActual = new Date();
@@ -379,7 +408,7 @@ function eliminarRegistroPresion(id) {
 
     // Guardar en localStorage
     const nuevoRegistro = {
-      id:crypto.randomUUID(),
+      id: crypto.randomUUID(),
       systolic,
       diastolic,
       fecha: inputFecha,
@@ -391,7 +420,7 @@ function eliminarRegistroPresion(id) {
     localStorage.setItem("registrosPresion", JSON.stringify(registrosPresion));
   }
 
-   // Capturamos los datos del formulario de presión arterial
+  // Capturamos los datos del formulario de presión arterial
   const formPresionArterial = document.getElementById("formPresionArterial");
   if (formPresionArterial) {
     formPresionArterial.addEventListener("submit", (event) => {
@@ -418,28 +447,28 @@ function eliminarRegistroPresion(id) {
     return "Invalid";
   }
   // ✅ Función flecha para mostrar la información de la presión arterial
-const cargarInformacionPresion = () => {
-  const container = document.getElementById("presionInfoContainer");
+  const cargarInformacionPresion = () => {
+    const container = document.getElementById("presionInfoContainer");
 
-  // Verificamos si existe el contenedor
-  if (container) {
-    container.innerHTML = `
+    // Verificamos si existe el contenedor
+    if (container) {
+      container.innerHTML = `
       <div>
         <p><b>${presionInfo.sistolica.titulo}:</b> ${presionInfo.sistolica.descripcion}</p>
         <p><b>${presionInfo.diastolica.titulo}:</b> ${presionInfo.diastolica.descripcion}</p>
       </div>
     `;
-  }
-};
-//mostrar los datos de los rangos de presión arterial del presionMockData.js
-const renderRangosPresion = () => {
-  const container = document.getElementById("rangoPresionContainer");
-  if (!container) return;
+    }
+  };
+  //mostrar los datos de los rangos de presión arterial del presionMockData.js
+  const renderRangosPresion = () => {
+    const container = document.getElementById("rangoPresionContainer");
+    if (!container) return;
 
-  container.innerHTML = "";
+    container.innerHTML = "";
 
-  rangosPresion.forEach((rango) => {
-    container.innerHTML += `
+    rangosPresion.forEach((rango) => {
+      container.innerHTML += `
     <div class="flex flex-row items-start gap-4">
       <div class="w-12 h-12 ${rango.color}"></div>
       <div class="text-sm text-gray-700">
@@ -449,8 +478,8 @@ const renderRangosPresion = () => {
       </div>
     </div>
   `;
-  });
-};
+    });
+  };
   /////////////////////////////////////Frecuencia cardiaca////////////////////////////////////
   // Función para mostrar el historial de frecuencia cardiaca
   const mostrarHistorialFrecuencia = () => {
@@ -493,7 +522,6 @@ const renderRangosPresion = () => {
     });
   };
 
-
   //utilidad para determinar el estado de la frecuencia cardiaca
   function getEstadoFrecuencia(frecuencia) {
     if (frecuencia < 60) {
@@ -523,65 +551,67 @@ const renderRangosPresion = () => {
   }
 
   // Función para editar un registro de frecuencia cardiaca
-document
-  .getElementById("contenedorFrecuenciaCardiaca")
-  .addEventListener("click", function (e) {
-    const id = e.target.dataset.id;
+  document
+    .getElementById("contenedorFrecuenciaCardiaca")
+    .addEventListener("click", function (e) {
+      const id = e.target.dataset.id;
 
-    if (e.target.classList.contains("btn-eliminar")) {
-      eliminarRegistroFrecuencia(id);
-    }
+      if (e.target.classList.contains("btn-eliminar")) {
+        eliminarRegistroFrecuencia(id);
+      }
 
-    if (e.target.classList.contains("btn-editar")) {
-      editarRegistroFrecuencia(id, e.target.closest("div.shadow-md"));
-    }
+      if (e.target.classList.contains("btn-editar")) {
+        editarRegistroFrecuencia(id, e.target.closest("div.shadow-md"));
+      }
 
-    if (e.target.classList.contains("btn-guardar-edicion")) {
-      guardarEdicionFrecuencia(id, e.target.closest("div.shadow-md"));
-    }
+      if (e.target.classList.contains("btn-guardar-edicion")) {
+        guardarEdicionFrecuencia(id, e.target.closest("div.shadow-md"));
+      }
 
-    if (e.target.classList.contains("btn-cancelar-edicion")) {
-      mostrarHistorialFrecuencia();
-    }
-  });
-
-
-
+      if (e.target.classList.contains("btn-cancelar-edicion")) {
+        mostrarHistorialFrecuencia();
+      }
+    });
 
   function eliminarRegistroFrecuencia(id) {
-  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+    const registros =
+      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
 
-  const nuevosRegistros = registros.filter((registro) => registro.id !== id);
+    const nuevosRegistros = registros.filter((registro) => registro.id !== id);
 
-  Swal.fire({
-    title: "¿Estás seguro?",
-    text: "Este registro será eliminado permanentemente.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#e3342f",
-    cancelButtonColor: "#6c757d",
-    confirmButtonText: "Sí, eliminar",
-    cancelButtonText: "Cancelar",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      localStorage.setItem("registrosFrecuencia", JSON.stringify(nuevosRegistros));
-      mostrarHistorialFrecuencia();
-      Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
-    }
-  });
-}
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Este registro será eliminado permanentemente.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#e3342f",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.setItem(
+          "registrosFrecuencia",
+          JSON.stringify(nuevosRegistros)
+        );
+        mostrarHistorialFrecuencia();
+        Swal.fire("Eliminado", "El registro ha sido eliminado.", "success");
+      }
+    });
+  }
 
-//funcion para editar un registro de frecuencia cardiaca
-function editarRegistroFrecuencia(id, card) {
-  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
-  const registro = registros.find((r) => r.id === id);
+  //funcion para editar un registro de frecuencia cardiaca
+  function editarRegistroFrecuencia(id, card) {
+    const registros =
+      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+    const registro = registros.find((r) => r.id === id);
 
-  if (!registro) return;
+    if (!registro) return;
 
-  const { frecuencia, fecha } = registro;
+    const { frecuencia, fecha } = registro;
 
-  // Reemplazamos el contenido de la card con inputs para editar
-  card.innerHTML = `
+    // Reemplazamos el contenido de la card con inputs para editar
+    card.innerHTML = `
     <div class="flex flex-col space-y-4">
       <div>
         <label class="block text-sm text-gray-700 mb-1">Fecha:</label>
@@ -597,47 +627,69 @@ function editarRegistroFrecuencia(id, card) {
       </div>
     </div>
   `;
-}
-// Función para guardar la edición de un registro de frecuencia cardiaca
-function guardarEdicionFrecuencia(id, card) {
-  const inputFrecuencia = card.querySelector("#editFrecuencia").value;
-  const inputFecha = card.querySelector("#editFechaFrecuencia").value;
-
-  if (!inputFrecuencia || !inputFecha) {
-    return Swal.fire("Error", "Todos los campos son obligatorios.", "error");
   }
+  // Función para guardar la edición de un registro de frecuencia cardiaca
+  function guardarEdicionFrecuencia(id, card) {
+    const inputFrecuencia = card.querySelector("#editFrecuencia").value;
+    const inputFecha = card.querySelector("#editFechaFrecuencia").value;
 
-  const frecuencia = parseInt(inputFrecuencia);
-  const fechaRegistro = new Date(inputFecha);
-  const fechaActual = new Date();
-  const fechaMinima = new Date("2000-01-01");
+    if (!inputFrecuencia || !inputFecha) {
+      return Swal.fire("Error", "Todos los campos son obligatorios.", "error");
+    }
 
-  if (isNaN(frecuencia)) {
-    return Swal.fire("Error", "La frecuencia debe ser un número válido.", "error");
+    const frecuencia = parseInt(inputFrecuencia);
+    const fechaRegistro = new Date(inputFecha);
+    const fechaActual = new Date();
+    const fechaMinima = new Date("2000-01-01");
+
+    if (isNaN(frecuencia)) {
+      return Swal.fire(
+        "Error",
+        "La frecuencia debe ser un número válido.",
+        "error"
+      );
+    }
+    if (frecuencia < 40 || frecuencia > 200) {
+      return Swal.fire(
+        "Error",
+        "Debe estar entre 40 y 200 latidos por minuto.",
+        "error"
+      );
+    }
+    if (fechaRegistro > fechaActual) {
+      return Swal.fire(
+        "Error",
+        "La fecha no puede estar en el futuro.",
+        "error"
+      );
+    }
+    if (fechaRegistro < fechaMinima) {
+      return Swal.fire(
+        "Error",
+        "La fecha debe ser posterior al 1 de enero de 2000.",
+        "error"
+      );
+    }
+
+    // Actualizar el registro
+    const registros =
+      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+    const nuevosRegistros = registros.map((r) =>
+      r.id === id ? { ...r, frecuencia, fecha: inputFecha } : r
+    );
+
+    localStorage.setItem(
+      "registrosFrecuencia",
+      JSON.stringify(nuevosRegistros)
+    );
+
+    Swal.fire(
+      "Actualizado",
+      "El registro fue editado exitosamente.",
+      "success"
+    );
+    mostrarHistorialFrecuencia(); // Recargar la vista
   }
-  if (frecuencia < 40 || frecuencia > 200) {
-    return Swal.fire("Error", "Debe estar entre 40 y 200 latidos por minuto.", "error");
-  }
-  if (fechaRegistro > fechaActual) {
-    return Swal.fire("Error", "La fecha no puede estar en el futuro.", "error");
-  }
-  if (fechaRegistro < fechaMinima) {
-    return Swal.fire("Error", "La fecha debe ser posterior al 1 de enero de 2000.", "error");
-  }
-
-  // Actualizar el registro
-  const registros = JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
-  const nuevosRegistros = registros.map((r) =>
-    r.id === id ? { ...r, frecuencia, fecha: inputFecha } : r
-  );
-
-  localStorage.setItem("registrosFrecuencia", JSON.stringify(nuevosRegistros));
-
-  Swal.fire("Actualizado", "El registro fue editado exitosamente.", "success");
-  mostrarHistorialFrecuencia(); // Recargar la vista
-}
-
-
 
   // ✅ Función para mostrar el resultado
   function mostrarResultado(status) {
@@ -673,32 +725,7 @@ function guardarEdicionFrecuencia(id, card) {
   }
 });
 
-
 //////////Frecuencia cardiaca/////////////
-
-// Datos locales de rangos de frecuencia cardiaca
-const rangosFrecuencia = [
-  {
-    nombre: "Frecuencia Baja",
-    valor: "< 60",
-    color: "bg-blue-500",
-  },
-  {
-    nombre: "Frecuencia Normal",
-    valor: "60 - 100",
-    color: "bg-green-500",
-  },
-  {
-    nombre: "Frecuencia Alta",
-    valor: "101 - 120",
-    color: "bg-orange-400",
-  },
-  {
-    nombre: "Frecuencia Muy Alta",
-    valor: "> 120",
-    color: "bg-red-600",
-  },
-];
 
 const renderRangosFrecuencia = () => {
   const container = document.getElementById("rangoFrecuenciaContainer");
@@ -813,4 +840,3 @@ if (formFrecuenciaCardiaca) {
     );
   });
 }
-
