@@ -533,45 +533,69 @@ const mostrarHistorialPresion = (estadoFiltro = "todos") => {
   };
   /////////////////////////////////////Frecuencia cardiaca////////////////////////////////////
   // Función para mostrar el historial de frecuencia cardiaca
-  const mostrarHistorialFrecuencia = () => {
-    const contenedor = document.getElementById("contenedorFrecuenciaCardiaca");
-    contenedor.innerHTML = "";
+const mostrarHistorialFrecuencia = (estadoFiltro = "todos") => {
+  if (!estadoFiltro || estadoFiltro === "") {
+    estadoFiltro = "todos";
+  }
 
-    const registros =
-      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+  const contenedor = document.getElementById("contenedorFrecuenciaCardiaca");
+  contenedor.innerHTML = "";
 
-    if (registros.length === 0) {
-      contenedor.innerHTML = `
-      <div class = "flex justify-center items-center h-full">
+  const registros = (JSON.parse(localStorage.getItem("registrosFrecuencia")) || [])
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+  if (registros.length === 0) {
+    contenedor.innerHTML = `
+      <div class="flex justify-center items-center h-full">
         <p class='text-gray-600 text-lg font-bold'>No hay registros de frecuencia cardiaca.</p>
       </div>
-      `;
-      return;
-    }
-    registros.forEach((registro) => {
-      const { id, frecuencia, fecha } = registro;
-      const estado = getEstadoFrecuencia(frecuencia);
-
-      const card = document.createElement("div");
-      card.className =
-        "bg-white shadow-md p-4 rounded-md border-l-8 " +
-        getColorPresion(estado);
-      card.innerHTML = `
-        <div class="flex flex-col space-y-4">
-    <div>
-      <p class="text-sm text-gray-600 mb-1">Fecha: <strong>${fecha}</strong></p>
-      <p class="text-md font-semibold">Frecuencia: ${frecuencia} lpm</p>
-      <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
-    </div>
-    <div class="flex flex-row justify-center gap-2 ">
-      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-id="${id}">Editar</button>
-      <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
-    </div>
-  </div>
     `;
-      contenedor.appendChild(card);
-    });
-  };
+    return;
+  }
+
+  const registrosFiltrados = estadoFiltro === "todos"
+    ? registros
+    : registros.filter((registro) => {
+        const estado = getEstadoFrecuencia(registro.frecuencia);
+        return estado === estadoFiltro;
+      });
+
+  if (registrosFiltrados.length === 0) {
+    contenedor.innerHTML = `
+      <div class="flex justify-center items-center h-full">
+        <p class='text-gray-600 text-lg font-bold'>No hay registros para el estado seleccionado.</p>
+      </div>
+    `;
+    return;
+  }
+
+  registrosFiltrados.forEach((registro) => {
+    const { id, frecuencia, fecha } = registro;
+    const estado = getEstadoFrecuencia(frecuencia);
+
+    const card = document.createElement("div");
+    card.className =
+      "bg-white shadow-md p-4 rounded-md border-l-8 " +
+      getColorPresion(estado);
+
+    card.innerHTML = `
+      <div class="flex flex-col space-y-4">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Fecha: <strong>${fecha}</strong></p>
+          <p class="text-md font-semibold">Frecuencia: ${frecuencia} lpm</p>
+          <p class="mt-2 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
+        </div>
+        <div class="flex flex-row justify-center gap-2 ">
+          <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-id="${id}">Editar</button>
+          <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
+        </div>
+      </div>
+    `;
+
+    contenedor.appendChild(card);
+  });
+};
+
 
   //utilidad para determinar el estado de la frecuencia cardiaca
   function getEstadoFrecuencia(frecuencia) {
