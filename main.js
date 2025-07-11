@@ -467,6 +467,15 @@ const mostrarHistorialPresion = (estadoFiltro = "todos") => {
       JSON.parse(localStorage.getItem("registrosPresion")) || [];
     registrosPresion.push(nuevoRegistro);
     localStorage.setItem("registrosPresion", JSON.stringify(registrosPresion));
+
+    //actualizamos la vista del historial
+    const contenedorPresion = document.getElementById("contenedorPresionArterial");
+    const filtroEstadoPresion = document.getElementById("filtroEstadoPresion");
+    const estaEnHstorialPresion = contenedorPresion && !contenedorPresion.classList.contains("hidden")
+
+    if (estaEnHstorialPresion){
+      mostrarHistorialPresion(filtroEstadoPresion.value);
+    }
   }
 
   // Capturamos los datos del formulario de presión arterial
@@ -530,6 +539,111 @@ const mostrarHistorialPresion = (estadoFiltro = "todos") => {
     });
   };
   /////////////////////////////////////Frecuencia cardiaca////////////////////////////////////
+  // Función para registrar frecuencia cardiaca
+const formFrecuenciaCardiaca = document.getElementById(
+  "formFrecuenciaCardiaca"
+);
+
+if (formFrecuenciaCardiaca) {
+  formFrecuenciaCardiaca.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const frecuencia = parseInt(
+      document.getElementById("inputFrecuencia").value
+    );
+    const fecha = document.getElementById("inputFechaFrecuencia").value;
+    const fechaActual = new Date();
+
+    // Validaciones
+    if (!frecuencia || !fecha) {
+      return Swal.fire(
+        "Error",
+        "Por favor, completa todos los campos.",
+        "error"
+      );
+    }
+    if (isNaN(frecuencia) || frecuencia <= 0) {
+      return Swal.fire(
+        "Error",
+        "La frecuencia debe ser un número válido.",
+        "error"
+      );
+    }
+    if (frecuencia < 40 || frecuencia > 200) {
+      return Swal.fire(
+        "Error",
+        "Debe estar entre 40 y 200 latidos por minuto.",
+        "error"
+      );
+    }
+    const fechaRegistro = new Date(fecha);
+    // Validación de fecha
+    if (fechaRegistro > fechaActual) {
+      return Swal.fire(
+        "Error",
+        "La fecha no puede estar en el futuro.",
+        "error"
+      );
+    }
+    const fechaMinima = new Date("2000-01-01");
+    if (fechaRegistro < fechaMinima) {
+      return Swal.fire(
+        "Error",
+        "La fecha debe ser posterior al 1 de enero de 2000.",
+        "error"
+      );
+    }
+
+    // Análisis del estado
+    if (frecuencia < 60) {
+      Swal.fire(
+        "Frecuencia Cardíaca Baja",
+        "Recomendable ver a un médico.",
+        "warning"
+      );
+    } else if (frecuencia <= 100) {
+      Swal.fire("Frecuencia Cardíaca Normal", "Sigue cuidándote.", "success");
+    } else if (frecuencia <= 120) {
+      Swal.fire(
+        "Frecuencia Cardíaca Alta",
+        "Sugerencia visitar a un médico.",
+        "warning"
+      );
+    } else {
+      Swal.fire(
+        "Frecuencia Cardíaca Muy Alta",
+        "Visitar a tu médico lo antes posible.",
+        "error"
+      );
+    }
+
+    // Guardar en localStorage frecuencia cardiaca
+    const nuevoRegistro = {
+      id: crypto.randomUUID(),
+      frecuencia,
+      fecha,
+    };
+
+    const registrosFrecuencia =
+      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
+
+    registrosFrecuencia.push(nuevoRegistro);
+    localStorage.setItem(
+      "registrosFrecuencia",
+      JSON.stringify(registrosFrecuencia)
+    );
+    // Actualizar la vista del historial
+    const contenedorFrecuencia = document.getElementById("contenedorFrecuenciaCardiaca");
+    const filtroEstadoFrecuencia = document.getElementById("filtroEstadoFrecuencia");
+    const estaEnHistorialFrecuencia = contenedorFrecuencia && !contenedorFrecuencia.classList.contains("hidden");
+
+    if (estaEnHistorialFrecuencia) {
+      mostrarHistorialFrecuencia(filtroEstadoFrecuencia.value);
+    }
+  });
+}
+
+  
   // Función para mostrar el historial de frecuencia cardiaca
 const mostrarHistorialFrecuencia = (estadoFiltro = "todos") => {
   if (!estadoFiltro || estadoFiltro === "") {
@@ -818,98 +932,3 @@ const renderRangosFrecuencia = () => {
   `;
   });
 };
-// Función para registrar frecuencia cardiaca
-const formFrecuenciaCardiaca = document.getElementById(
-  "formFrecuenciaCardiaca"
-);
-
-if (formFrecuenciaCardiaca) {
-  formFrecuenciaCardiaca.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const frecuencia = parseInt(
-      document.getElementById("inputFrecuencia").value
-    );
-    const fecha = document.getElementById("inputFechaFrecuencia").value;
-    const fechaActual = new Date();
-
-    // Validaciones
-    if (!frecuencia || !fecha) {
-      return Swal.fire(
-        "Error",
-        "Por favor, completa todos los campos.",
-        "error"
-      );
-    }
-    if (isNaN(frecuencia) || frecuencia <= 0) {
-      return Swal.fire(
-        "Error",
-        "La frecuencia debe ser un número válido.",
-        "error"
-      );
-    }
-    if (frecuencia < 40 || frecuencia > 200) {
-      return Swal.fire(
-        "Error",
-        "Debe estar entre 40 y 200 latidos por minuto.",
-        "error"
-      );
-    }
-    const fechaRegistro = new Date(fecha);
-    // Validación de fecha
-    if (fechaRegistro > fechaActual) {
-      return Swal.fire(
-        "Error",
-        "La fecha no puede estar en el futuro.",
-        "error"
-      );
-    }
-    const fechaMinima = new Date("2000-01-01");
-    if (fechaRegistro < fechaMinima) {
-      return Swal.fire(
-        "Error",
-        "La fecha debe ser posterior al 1 de enero de 2000.",
-        "error"
-      );
-    }
-
-    // Análisis del estado
-    if (frecuencia < 60) {
-      Swal.fire(
-        "Frecuencia Cardíaca Baja",
-        "Recomendable ver a un médico.",
-        "warning"
-      );
-    } else if (frecuencia <= 100) {
-      Swal.fire("Frecuencia Cardíaca Normal", "Sigue cuidándote.", "success");
-    } else if (frecuencia <= 120) {
-      Swal.fire(
-        "Frecuencia Cardíaca Alta",
-        "Sugerencia visitar a un médico.",
-        "warning"
-      );
-    } else {
-      Swal.fire(
-        "Frecuencia Cardíaca Muy Alta",
-        "Visitar a tu médico lo antes posible.",
-        "error"
-      );
-    }
-
-    // Guardar en localStorage frecuencia cardiaca
-    const nuevoRegistro = {
-      id: crypto.randomUUID(),
-      frecuencia,
-      fecha,
-    };
-
-    const registrosFrecuencia =
-      JSON.parse(localStorage.getItem("registrosFrecuencia")) || [];
-
-    registrosFrecuencia.push(nuevoRegistro);
-    localStorage.setItem(
-      "registrosFrecuencia",
-      JSON.stringify(registrosFrecuencia)
-    );
-  });
-}
