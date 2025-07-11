@@ -239,8 +239,6 @@ const mostrarHistorialPresion = (estadoFiltro = "todos") => {
   });
 };
 
-
-
   // colores para detectar el estado de la presión arterial en la card
   function getColorFrecuencia(estado) {
     switch (estado) {
