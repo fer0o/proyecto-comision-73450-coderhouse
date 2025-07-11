@@ -16,9 +16,6 @@ const cargarDatosPresion = async () => {
     presionInfo = data.presionInfo;
     rangosPresion = data.rangosPresion;
 
-    // ✅ Si necesitas renderizar info al inicio:
-    // cargarInformacionPresion();
-    // renderRangosPresion();
   } catch (error) {
     console.error("Error al cargar los datos de presión arterial:", error);
     Swal.fire({
@@ -98,6 +95,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Navegación de botones en medición
   const btnPresionArterial = document.getElementById("btnPresionArterial");
   const btnRitmoCardiaco = document.getElementById("btnRitmoCardiaco");
+// Filtros de estado de presión arterial y frecuencia cardiaca
+  const filtroEstadoPresion = document.getElementById("filtroEstadoPresion");
+  const filtroEstadoFrecuencia = document.getElementById("filtroEstadoFrecuencia");
+
   // Cargamos la información de presión al mostrar la vista
   if (btnPresionArterial) {
     btnPresionArterial.addEventListener("click", () => {
@@ -120,6 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnHistorialRitmoCardiaco = document.getElementById(
     "btnHistorialRitmoCardiaco"
   );
+  
   // Cargamos la información del contenedor y ocultamos la informacion segun lo que se seleccione
   const contenedorPresion = document.getElementById(
     "contenedorPresionArterial"
@@ -131,76 +133,124 @@ document.addEventListener("DOMContentLoaded", () => {
   if (
     btnHistorialPresionArterial &&
     contenedorPresion &&
-    contenedorFrecuencia
+    contenedorFrecuencia &&
+    filtroEstadoPresion &&
+    filtroEstadoFrecuencia
   ) {
     btnHistorialPresionArterial.addEventListener("click", () => {
       contenedorFrecuencia.classList.add("hidden");
       contenedorPresion.classList.remove("hidden");
-      mostrarHistorialPresion();
+
+      //mostrar el select de presion arterial y ocultar el de frecuencia cardiaca
+      filtroEstadoPresion.classList.remove("hidden");
+      filtroEstadoFrecuencia.classList.add("hidden");
+      
+      mostrarHistorialPresion(filtroEstadoPresion.value);
     });
+
+    //cambio solo una vez
+    filtroEstadoPresion.addEventListener("change", () =>{
+      mostrarHistorialPresion(filtroEstadoPresion.value)
+    })
   }
-  if (btnHistorialRitmoCardiaco && contenedorPresion && contenedorFrecuencia) {
+
+   // Evento para el botón de historial de ritmo cardiaco
+  if (btnHistorialRitmoCardiaco && contenedorPresion && contenedorFrecuencia && filtroEstadoPresion && filtroEstadoFrecuencia) {
     btnHistorialRitmoCardiaco.addEventListener("click", () => {
       contenedorPresion.classList.add("hidden");
       contenedorFrecuencia.classList.remove("hidden");
-      mostrarHistorialFrecuencia();
+
+      //mostrar el select de frecuencia cardiaca y ocultar el de presion arterial
+      filtroEstadoFrecuencia.classList.remove("hidden");
+      filtroEstadoPresion.classList.add("hidden");
+      // Mostrar el historial de frecuencia cardiaca
+      mostrarHistorialFrecuencia(filtroEstadoFrecuencia.value);
     });
+    // listener una sola vez
+    filtroEstadoFrecuencia.addEventListener("change", () => {
+      mostrarHistorialFrecuencia(filtroEstadoFrecuencia.value);
+    })
   }
   ////////////////////////////presion arterial////////////////////////////////////
   // Función para mostrar el historial de presión arterial
-  const mostrarHistorialPresion = () => {
-    const contenedor = document.getElementById("contenedorPresionArterial");
-    contenedor.innerHTML = "";
+const mostrarHistorialPresion = (estadoFiltro = "todos") => {
+  // Normalizamos el valor
+  if (!estadoFiltro || estadoFiltro === "") {
+    estadoFiltro = "todos";
+  }
 
-    const registros =
-      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+  const contenedor = document.getElementById("contenedorPresionArterial");
+  contenedor.innerHTML = "";
 
-    if (registros.length === 0) {
-      contenedor.innerHTML = `
-      <div class = "flex justify-center items-center h-full">
-        <p class='text-gray-600 text-lg font-bold'>No hay registros de presion arterial.</p>
+  const registros = (JSON.parse(localStorage.getItem("registrosPresion")) || [])
+    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+  if (registros.length === 0) {
+    contenedor.innerHTML = `
+      <div class="flex justify-center items-center h-full">
+        <p class='text-gray-600 text-lg font-bold'>No hay registros de presión arterial.</p>
       </div>`;
-      return;
-    }
-    registros.forEach((registro) => {
-      const { id, systolic, diastolic, fecha } = registro;
-      const estado = getStatus({ systolic, diastolic });
+    return;
+  }
 
-      const card = document.createElement("div");
-      card.className =
-        "bg-white shadow-md p-4 rounded-sm border-l-8 shadow-sm shadow-black " +
-        getColorFrecuencia(estado);
+  const registrosFiltrados = estadoFiltro === "todos"
+    ? registros
+    : registros.filter((registro) => {
+        const estado = getStatus({
+          systolic: registro.systolic,
+          diastolic: registro.diastolic,
+        });
+        return estado === estadoFiltro;
+      });
 
-      //nueva card para mostrar los datos
-      card.innerHTML = `
-  <div class="flex flex-col space-y-4">
-    <div>
-      <p class="text-sm text-gray-600 mb-1">Fecha: <strong>${fecha}</strong></p>
-      <p class="text-md font-semibold">Sistólica: ${systolic} mmHg</p>
-      <p class="text-md font-semibold">Diastólica: ${diastolic} mmHg</p>
-      <p class="mt-1 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
-    </div>
-    <div class="flex flex-row justify-center gap-2 ">
-      <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-id="${id}">Editar</button>
-      <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
-    </div>
-  </div>
-`;
+  if (registrosFiltrados.length === 0) {
+    contenedor.innerHTML = `
+      <div class="flex justify-center items-center h-full">
+        <p class='text-gray-600 text-lg font-bold'>No hay registros para el estado seleccionado.</p>
+      </div>`;
+    return;
+  }
 
-      contenedor.appendChild(card);
-    });
-  };
+  registrosFiltrados.forEach((registro) => {
+    const { id, systolic, diastolic, fecha } = registro;
+    const estado = getStatus({ systolic, diastolic });
+
+    const card = document.createElement("div");
+    card.className =
+      "bg-white shadow-md p-4 rounded-sm border-l-8 shadow-sm shadow-black " +
+      getColorFrecuencia(estado);
+
+    card.innerHTML = `
+      <div class="flex flex-col space-y-4">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Fecha: <strong>${fecha}</strong></p>
+          <p class="text-md font-semibold">Sistólica: ${systolic} mmHg</p>
+          <p class="text-md font-semibold">Diastólica: ${diastolic} mmHg</p>
+          <p class="mt-1 text-sm text-gray-700"><strong>Estado:</strong> ${estado}</p>
+        </div>
+        <div class="flex flex-row justify-center gap-2 ">
+          <button class="btn-editar bg-yellow-400 text-white px-4 py-2 rounded text-sm" data-id="${id}">Editar</button>
+          <button class="btn-eliminar bg-red-500 text-white px-4 py-2 rounded text-sm" data-id="${id}">Eliminar</button>
+        </div>
+      </div>
+    `;
+
+    contenedor.appendChild(card);
+  });
+};
+
+
 
   // colores para detectar el estado de la presión arterial en la card
   function getColorFrecuencia(estado) {
     switch (estado) {
-      case "Low":
+      case "Presión Baja":
         return "border-blue-400";
-      case "Normal":
+      case "Presión Normal":
         return "border-green-500";
-      case "Risk":
+      case "Presión en Riesgo":
         return "border-orange-400";
-      case "High":
+      case "Presión Alta":
         return "border-red-600";
       default:
         return "border-gray-300";
@@ -300,7 +350,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ✅ Reemplazar en localStorage
     const registros =
-      JSON.parse(localStorage.getItem("registrosPresion")) || [];
+      JSON.parse(localStorage.getItem("registrosPresion")) || []
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
 
     const nuevosRegistros = registros.map((registro) =>
       registro.id === id
@@ -440,11 +491,11 @@ document.addEventListener("DOMContentLoaded", () => {
       (diastolic >= 80 && diastolic <= 89);
     const esAlta = systolic >= 140 || diastolic >= 90;
 
-    if (esBaja) return "Low";
-    if (esNormal) return "Normal";
-    if (esRiesgo) return "Risk";
-    if (esAlta) return "High";
-    return "Invalid";
+    if (esBaja) return "Presión Baja";
+    if (esNormal) return "Presión Normal";
+    if (esRiesgo) return "Presión en Riesgo";
+    if (esAlta) return "Presión Alta";
+    return "Valor Inválido";
   }
   // ✅ Función flecha para mostrar la información de la presión arterial
   const cargarInformacionPresion = () => {
@@ -694,24 +745,24 @@ document.addEventListener("DOMContentLoaded", () => {
   // ✅ Función para mostrar el resultado
   function mostrarResultado(status) {
     switch (status) {
-      case "Low":
+      case "Presión Baja":
         Swal.fire(
           "Nivel de Presión Baja",
           "Recomendable ver a un médico.",
           "warning"
         );
         break;
-      case "Normal":
+      case "Presión Normal":
         Swal.fire("Nivel de Presión Normal", "Sigue cuidándote.", "success");
         break;
-      case "Risk":
+      case "Presión en Riesgo":
         Swal.fire(
           "Presión en Riesgo",
           "Sugerencia visitar a un médico.",
           "warning"
         );
         break;
-      case "High":
+      case "Presión Alta":
         Swal.fire(
           "Niveles altos",
           "Visitar a tu médico lo antes posible.",
