@@ -94,9 +94,39 @@
           </div>
         </div>
       </div>
+      <!-- 🔽 Selects para filtrar por estado -->
+      <div class="flex justify-center gap-4">
+        <select
+          id="filtroEstadoPresion"
+          class="border border-gray-300 rounded p-2 hidden"
+        >
+          <option value="">-- Filtrar estado presión --</option>
+          <option value="Presión Baja">Presión Baja</option>
+          <option value="Presión Normal">Presión Normal</option>
+          <option value="Presión en Riesgo">Presión en Riesgo</option>
+          <option value="Presión Alta">Presión Alta</option>
+        </select>
+
+        <select
+          id="filtroEstadoFrecuencia"
+          class="border border-gray-300 rounded p-2 hidden"
+        >
+          <option value="">-- Filtrar estado frecuencia --</option>
+          <option value="Frecuencia Baja">Frecuencia Baja</option>
+          <option value="Frecuencia Normal">Frecuencia Normal</option>
+          <option value="Frecuencia Alta">Frecuencia Alta</option>
+          <option value="Frecuencia Muy Alta">Frecuencia Muy Alta</option>
+        </select>
+      </div>
       <!-- Contenedores para los historiales -->
-      <div id="contenedorPresionArterial" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 py-4"></div>
-      <div id="contenedorFrecuenciaCardiaca" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 py-4"></div>
+      <div
+        id="contenedorPresionArterial"
+        class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 py-4"
+      ></div>
+      <div
+        id="contenedorFrecuenciaCardiaca"
+        class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 py-4"
+      ></div>
     </div>
 
     <!-- Vista Ayuda -->
